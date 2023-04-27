@@ -1,0 +1,14 @@
+Model
+
+z_l 0.1972841823760099
+              Galaxy
+inc                      Uniform(40, 90.0)
+beta                     Uniform(-0.5, 0.5)
+log_mbh                  Uniform(7.5, 9.5)
+ml                       Uniform(1.0, 10)
+log_M0                   Uniform(5, 13)
+rc                       Uniform(0, 15)
+rs                       Uniform(1, 30)
+qDM                        Fixed(1.0)
+slope                    Uniform(0.5, 2.0)
+
