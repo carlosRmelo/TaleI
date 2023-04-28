@@ -133,8 +133,8 @@ def run(result_path, data_path, alpha=2.5):
                                 Jam_Model.sigma_dm, Jam_Model.qobs_dm,
                                 Jam_Model.inc, R, Jam_Model.distance)
     MMbh = Jam_Model.mbh # Model BH mass
-    MMtotal = MMstar + MMdm + MMbh # Total Mass 
-    Mfdm = MMdm / MMtotal          # Dark matter fraction
+    MMtotal = MMstar + MMdm  # Total Mass 
+    Mfdm = MMdm / MMtotal    # Dark matter fraction
 
     # Data quantities
 
@@ -152,8 +152,8 @@ def run(result_path, data_path, alpha=2.5):
     i = rDM <= R_kpc
     Mdm = sum(dm_dataset[:,3][i]*1e10)
 
-    Mbh = (0.015411)*(1e10/0.67) # BH mass from TNG catalogue
-    Mtotal = Mstar + Mdm + Mbh   # Total snapshot mass within R
+    Mbh = 1e8 # should be the BH mass from TNG catalogue 
+    Mtotal = Mstar + Mdm         # Total snapshot mass within R
     fdm = Mdm/Mtotal             # DM fraction in the snapshot within R
     
     print('=' * term_size.columns)

@@ -1,9 +1,9 @@
 # ## Testing the a full Pipeline
 # 
-# Model: DM parametrized by gNFW, scalar anisotropy, 
+# Model: DM parametrized by gNFW, black hole, scalar anisotropy, 
 # scalar mass-to-light ratio. The ideia is testing the TNG50 simulation
 # 
-# Date: 28/04/2023
+# Date: 16/03/2023
 # 
 
 import autolens as al
@@ -70,12 +70,38 @@ def run(data_path, ncores):
         #MGE components
     sol_star, pa, eps, xmed, ymed = np.load('%s/mge.npy'%data_path,  allow_pickle=True)
 
-        #cosmology info
+        #Lens/cosmology info
     info  = fits.open('{}/image.fits'.format(data_path))[0].header
     cosmo = FlatLambdaCDM(H0=info["H0"], Om0=info["OMEGA0"])
+    pixel_scale = info["PIXSCALE"]
+    
+    noise = fits.open('{}/noise.fits'.format(data_path))[0].data
+    r = dist_circle(noise.shape[1]/2, 
+                    noise.shape[0]/2, 
+                    noise.shape)          # distance matrix from the centre
+    mask = r <= 0.25/pixel_scale          # pixels within 0.25'' radii
+    noise[mask] = noise[mask]*10          # scale the noise within mask by a factor of 10
+    fits.writeto('{}/noise_scaled.fits'.format(data_path), data=noise) # save scaled noise
+
+        #Lens data
+    
+    imaging = al.Imaging.from_fits(
+        image_path=path.join("./{}/".format(data_path), "image.fits"),
+        noise_map_path=path.join("./{}/".format(data_path), "noise_scaled.fits"),
+        psf_path=path.join("./{}/".format(data_path), "psf.fits"),
+        pixel_scales=pixel_scale,
+    )
+    
+    
+    
+    mask_2d = al.Mask2D.circular(shape_native=imaging.shape_native,
+                                        radius=2.5,
+                                        pixel_scales=pixel_scale)
+    imaging = imaging.apply_mask(mask_2d)
 
         #Combined model building
-    z_l     = info["z_l"]                    #lens Redshift
+    z_l     = info["z_l"]                                                  #lens Redshift
+    z_s     = info["z_s"]                                                  #source Redshift
 
     surf  = sol_star[:,0]
     sigma = sol_star[:,1]
@@ -95,6 +121,26 @@ def run(data_path, ncores):
     Jam_Model.set_mass_to_light(ml_kind="scalar")
     Jam_Model.include_dm("gNFW")
 
+    # Lens model
+    mge_mass_profile = Lens.mass_profile.MGE()  #initialize the class
+        
+        #Setting the parameters
+    mge_mass_profile.MGE_comps(z_l=z_l, z_s=z_s, 
+                                surf_lum=surf, sigma_lum=sigma, qobs_lum=qObs,
+                                )
+        #Add DM component
+    ellgNFW  = al.mp.EllNFWGeneralized()
+
+    mge_mass_profile.Analytic_Model(ellgNFW) 
+
+    CM = CombinedModel.Model(Jampy_model=Jam_Model, 
+                            Lens_model=mge_mass_profile, 
+                            masked_imaging=imaging, cosmology=cosmo, quiet=True)
+
+    #Setup Configurations
+    CM.set_mass_to_light(ml_kind='scalar')          #Setting scalar ML
+    CM.set_anisotropy(beta_kind='scalar')           #Setting vector anisotropy
+    CM.include_DM_MGE(profile="gNFW")               #Setting Dark matter component
 
     #Build the model, and passing the priors
         # minumum inclination allowed
@@ -107,17 +153,51 @@ def run(data_path, ncores):
                 "rs":      p.UniformPrior(1e-2, 30),
                 "qDM":     1.0,
                 "slope":   p.UniformPrior(0.5, 2.0),
+                "gamma":   1.0,
                 }
 
 
-    Jam_Model.build_model(parsDic)
+    CM.build_model(parsDic)
 
-    #Config non-linear search
-    Jam_Model.config_non_linear(nlive=500, n_cores=ncores,)
+        ## Initialize the phase1
+    from dyLens.pipelines.phase_1 import Ph1Model
     output_path = data_path.split("/")[1]+"/model1"
+    ph1 = Ph1Model(CombinedModel=CM, output_path=output_path)
 
-    Jam_Model.run_dynesty(maxiter=80, output_path=output_path)
+        ## Update the non-linear sampler to save some time
+    ph1.config_non_linear(n_cores=ncores, nlive=1000)
 
+        #Run Phase1 nested sampler
+    ph1.run_dynesty(maxiter=300)
+
+    from dyLens.pipelines.phase_2 import Ph2Model
+
+    ph2 = Ph2Model(output_path=output_path, instance=ph1)
+    ph2.config_non_linear(n_cores=ncores)
+    ph2.run_dynesty(maxiter=300)
+
+    from dyLens.pipelines.phase_3 import Ph3Model
+
+    ph3 = Ph3Model(output_path=output_path, instance=ph2)
+    ph3.config_non_linear(n_cores=ncores, nlive=500)
+    ph3.run_dynesty(maxiter=300)
+
+    from dyLens.pipelines.phase_4 import Ph4Model
+
+    ph4 = Ph4Model(output_path=output_path, instance=ph3)
+    ph4.config_non_linear(n_cores=ncores)
+        ## Update the source galaxy priors based on the simulated data
+    New_sourcePriors = {"pixels": p.UniformPrior(25, 300) }
+    ph4.config_pixelized_source(New_sourcePriors)
+
+    ph4.run_dynesty(maxiter=300)
+
+    from dyLens.pipelines.phase_5 import Ph5Model
+
+    ph5 = Ph5Model(output_path=output_path, instance=ph4, 
+                    n_likelihoods=350, n_cores=ncores, threshold=0.2)
+    ph5.config_non_linear(n_cores=ncores, nlive=500)
+    ph5.run_dynesty(maxiter=300)
 
 if __name__ == '__main__':
     parser = OptionParser() #You also should inform the folder name
