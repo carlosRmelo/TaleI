@@ -81,7 +81,8 @@ def run(data_path, ncores):
                     noise.shape)          # distance matrix from the centre
     mask = r <= 0.25/pixel_scale          # pixels within 0.25'' radii
     noise[mask] = noise[mask]*10          # scale the noise within mask by a factor of 10
-    fits.writeto('{}/noise_scaled.fits'.format(data_path), data=noise) # save scaled noise
+    fits.writeto('{}/noise_scaled.fits'.format(data_path), data=noise, 
+                 overwrite=True) # save scaled noise
 
         #Lens data
     
@@ -141,6 +142,7 @@ def run(data_path, ncores):
     CM.set_mass_to_light(ml_kind='scalar')          #Setting scalar ML
     CM.set_anisotropy(beta_kind='scalar')           #Setting vector anisotropy
     CM.include_DM_MGE(profile="gNFW")               #Setting Dark matter component
+    CM.include_DM_analytical(analytical_DM=ellgNFW)  #Analytical eNFW
 
     #Build the model, and passing the priors
         # minumum inclination allowed
