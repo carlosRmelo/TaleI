@@ -6,43 +6,58 @@
 
 from optparse import OptionParser
 
-from dynesty import NestedSampler
-from dynesty import plotting as dyplot
-from dynesty import utils as dyfunc
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 
 plt.rcParams['xtick.labelsize']= 12
 plt.rcParams['ytick.labelsize']= 12
 
+import json
 import pickle
 import os
-import json
+
+
+from dynesty import NestedSampler
+from dynesty import plotting as dyplot
+from dynesty import utils as dyfunc
+
+import autolens as al
+import autolens.plot as aplt
 
 from plotbin.plot_velfield import plot_velfield
-from jampy.mge_radial_density import mge_radial_density
 from jampy.mge_radial_mass import mge_radial_mass
+from jampy.mge_radial_density import mge_radial_density
 from jampy.mge_half_light_isophote import mge_half_light_isophote
 from astropy import units as u
 
 
 
-def run(result_path, data_path, alpha=2.5):
-    analysis_path = result_path+"/Analysis/" # path where the analysis will be saved
-    os.makedirs(analysis_path)              # create the analysis folder
+def run(result_path, data_path, phase_name, alpha=2.5):
+    result_path   = result_path+"/"+phase_name  #path to the non-linear results
 
-        # Load sampler and model
-    with open(result_path+f'/Final_sampler.pickle','rb') as f:
+         # phase to compute the results
+    analysis_path = result_path+"/Analysis/" #path where the analysis will be saved
+    os.makedirs(analysis_path)
+
+    with open(result_path+'/Final_sampler_{}.pickle'.format(phase_name),'rb') as f:
         sampler = pickle.load(f)
         f.close()
-    with open(result_path+f'/JAM_class.pickle','rb') as f:
-        Jam_Model = pickle.load(f)
+
+    with open(result_path+'/{}.pickle'.format(phase_name),'rb') as f:
+        phase = pickle.load(f)
         f.close()
-    with open(result_path+f'/priors.pickle','rb') as f:
+
+    with open(result_path+'/CombinedModel_{}.pickle'.format(phase_name),'rb') as f:
+        CM = pickle.load(f)
+        f.close()
+        
+    with open(result_path+'/priors_{}.pickle'.format(phase_name),'rb') as f:
         priors = pickle.load(f)
         f.close()
+    
+    sampler = sampler["sampler"]
+    sampler.results.summary()
+
     # Generate a new set of results with statistical+sampling uncertainties.
     labels = list(priors.keys())
     parsRes = priors.copy()
@@ -55,15 +70,14 @@ def run(result_path, data_path, alpha=2.5):
     for i, key in enumerate(parsRes.keys()):
         parsRes[key] = quantiles[i][1]
 
-        # Tracer plot
     fig, axes = dyplot.traceplot(results=results_sim, show_titles=True,
-                             labels=labels,
-                             )
+                                labels=labels,
+                                )
     fig.tight_layout()
     plt.savefig(analysis_path+"/tracer_plot.png")
     plt.close()
-    
-        # Plot the 2-D marginalized posteriors.
+
+    # Plot the 2-D marginalized posteriors.
     cfig, caxes, = dyplot.cornerplot(results_sim, smooth=0.08,
                                     show_titles=True,labels=labels,
                             )
@@ -71,41 +85,122 @@ def run(result_path, data_path, alpha=2.5):
     plt.savefig(analysis_path+"/corner_plot.png")
     plt.close()
 
-        # Data and model
-    Jam_Model.Updt_Model(UpdtparsDic=parsRes)
-    plt.figure(figsize=(18,10))
-    rmsModel, ml, chi2, flux  = Jam_Model.run_current(quiet=False, 
-                                                    plot=True,nodots=False, 
-                                                    cmap="rainbow", label=r"km/s")
+    if phase_name == "phase1":
+        source_ell_comp = al.convert.elliptical_comps_from(axis_ratio=parsRes["source_q"], 
+                                                        angle=parsRes["source_phi"])
+
+        source_model = al.Galaxy(
+            redshift=CM.Lens_model.z_s,
+            light=al.lp.EllSersic(
+                centre=(parsRes["source_y0"], parsRes["source_x0"]),
+                elliptical_comps=source_ell_comp,
+                intensity=parsRes["source_intensity"],
+                effective_radius=parsRes["source_eff_r"],
+                sersic_index=parsRes["source_n_index"],
+            ),
+        )    
+
+
+        CM.source_galaxy(source_model)
+
+    else:
+        
+        adp_pix = phase.source_pix(pixels=int(phase.parsSource["pixels"]),
+                                    weight_floor=phase.parsSource["weight_floor"],
+                                    weight_power=phase.parsSource["weight_power"]
+                                    )
+
+        adp_reg = phase.source_reg(inner_coefficient=phase.parsSource["inner_coefficient"],
+                                    outer_coefficient=phase.parsSource["outer_coefficient"],
+                                    signal_scale=phase.parsSource["signal_scale"]
+                                    )
+
+        source_model = al.Galaxy(redshift=CM.Lens_model.z_s,
+                                    pixelization=adp_pix, regularization=adp_reg,
+                                    hyper_model_image=phase.hyper_image_2d,
+                                    hyper_galaxy_image=phase.hyper_image_2d,
+                                    )
+
+        CM.source_galaxy(source_model=source_model)  #Setting the source galaxy model
+    
+    CM.quiet = True
+    CM.Updt_Model(parsRes)
+    print("Generating lensing results. This could take a while.")
+
+    # Config. Pyautolens plots
+    cmap = aplt.Cmap(cmap="rainbow")
+
+    mat_plot_2d_output = aplt.MatPlot2D(
+        output=aplt.Output(
+            filename=f"None",
+            path=analysis_path,
+            format=["png",],
+            format_folder=True,
+        ),
+        cmap=cmap)
+    mat_plot_2d =  mat_plot_2d_output
+    # Make a fit plotter
+    fit_plotter = aplt.FitImagingPlotter(fit=CM.Fit, mat_plot_2d=mat_plot_2d)
+    
+    mat_plot_2d.output.filename = "fit_subplot"
+    fit_plotter.subplot_fit_imaging()
+    
+    mat_plot_2d.output.filename = "fit_image"
+    fit_plotter.figures_2d(image=True)
+
+    mat_plot_2d.output.filename = "fit_model"
+    fit_plotter.figures_2d(model_image=True)
+
+    mat_plot_2d.output.filename = "residual"
+    fit_plotter.figures_2d(residual_map=True)
+
+    mat_plot_2d.output.filename = "subplot_plane"
+    fit_plotter.subplot_of_planes(plane_index=1)
+    
+    # Make a inversion plotter
+    inversion_plotter = aplt.InversionPlotter(inversion=CM.Fit.inversion, 
+                                            mat_plot_2d=mat_plot_2d)
+
+    mat_plot_2d.output.filename = "reconstruction"
+    inversion_plotter.figures_2d_of_mapper(mapper_index=0,
+                        reconstruction=True)
+    
+    mat_plot_2d.output.filename = "subplot_inversion"
+    inversion_plotter.subplot_of_mapper(mapper_index=0)
+
+    # Plot dynamical model and residual
+    fig = plt.figure(figsize=(18, 10))
+    rmsModel, ml, chi2, chi2T = CM.Jampy_model._run(plot=True, cmap="rainbow", label=r"km/s", xlabel="arcsec")
+
     plt.tight_layout()
-    plt.savefig(analysis_path+"/model.png")
+    plt.savefig(analysis_path+"/jam_model.png")
     plt.close()
 
-        # Residual
     fig = plt.figure(figsize=(18, 10))
-    plot_velfield(Jam_Model.xbin, Jam_Model.ybin, 
-                100*abs(Jam_Model.rms-rmsModel)/Jam_Model.rms,
+    plot_velfield(CM.Jampy_model.xbin, CM.Jampy_model.ybin, 
+                100*abs(CM.Jampy_model.rms-rmsModel)/CM.Jampy_model.rms,
                 colorbar=True,  cmap="rainbow",  
                 markersize=0.2, label="[%]")
     plt.title(r"${\Delta V_{\rm rms}^{*}}$")
 
     fig.tight_layout()
-    plt.savefig(analysis_path+"/residual.png")
+    plt.savefig(analysis_path+"/jam_residual.png")
     plt.close()
-
-        # Creates a json file with the description of the measured quantities
+    
+    # Creates a json file with the description of the measured quantities
     out_descripition = open("{}/description.json".format(analysis_path), "w")
     description = { "Reff":  "MGE effetive radius, in arcsec.",
+                    "thetaE": "Measured Einstein Ring in arcsec",
                     "R":     "Radius where quantities were measured, in arcsec.",
-                    "Mstar": "True stellar mass within R, in log10.", 
-                    "Mdm":   "True dm mass within R, in log10.", 
-                    "Mbh":   "True BH mass within R, in log10.", 
-                    "Mtotal":"True total mass within R, in log10.", 
+                    "Mstar": "True stellar mass within R, in 1e10Msun.", 
+                    "Mdm":   "True dm mass within R, in 1e10Msun.", 
+                    "Mbh":   "True BH mass within R, in 1e10Msun.", 
+                    "Mtotal":"True total mass within R, in 1e10Msun.", 
                     "fdm":   "Fraction of DM within R.",
-                    "MMstar": "Model stellar mass within R, in log10.", 
-                    "MMdm":   "Model dm mass within R, in log10.", 
-                    "MMbh":   "Model BH mass within R, in log10.", 
-                    "MMtotal":"Model total mass within R, in log10.", 
+                    "MMstar": "Model stellar mass within R, in 1e10Msun.", 
+                    "MMdm":   "Model dm mass within R, in 1e10Msun.", 
+                    "MMbh":   "Model BH mass within R, in 1e10Msun.", 
+                    "MMtotal":"Model total mass within R, in 1e10Msun.", 
                     "Mfdm":   "Model DM fraction within R.",
                     "Dstar":  "(MMstar - Mstar)/Mstar",
                     "Ddm":    "(MMdm - Mdm)/Mdm",
@@ -115,37 +210,39 @@ def run(result_path, data_path, alpha=2.5):
     json.dump(description, out_descripition, indent = 8)
     out_descripition.close()
 
+    einstein_radius = CM.Fit.tracer.einstein_radius_from(CM.Fit.imaging.grid)
     # Get the effective radius in arcsec, and other quantities
     # See mge_half_light_isophote documentation for more details
-    reff, reff_maj, eps_e, lum_tot = mge_half_light_isophote(Jam_Model.surf_lum,
-                                                Jam_Model.sigma_lum,
-                                                Jam_Model.qobs_lum,
-                                                Jam_Model.distance)
-    
+    reff, reff_maj, eps_e, lum_tot = mge_half_light_isophote(CM.Lens_model.surf_lum,
+                                                            CM.Lens_model.sigma_lum,
+                                                            CM.Lens_model.qobs_lum,
+                                                            CM.Jampy_model.distance)
     #  Model quantities
-    R     = alpha*reff    # alpha times the Reff in arcsec
-    R_kpc = ( (R*u.arcsec * Jam_Model.distance*u.Mpc ).to(
-                        u.kpc,u.dimensionless_angles()) ).value # value in kpc
+    R     = alpha*reff    # 2.5 Reff in arcsec
+    R_kpc = ( (R*u.arcsec * CM.Jampy_model.distance*u.Mpc ).to(
+                        u.kpc,u.dimensionless_angles()) ).value # 2.5Reff in kpc
 
 
-        # Get the radial mass of stars and DM within R
-    MMstar =  mge_radial_mass(Jam_Model.surf_lum * Jam_Model.ml_model, 
-                                Jam_Model.sigma_lum, Jam_Model.qobs_lum,
-                                Jam_Model.inc, R, Jam_Model.distance)
+        # Get the radial mass of stars and DM within rad
+    MMstar = float ( mge_radial_mass(CM.Jampy_model.surf_lum * CM.Jampy_model.ml_model, 
+                                CM.Jampy_model.sigma_lum, CM.Jampy_model.qobs_lum,
+                                CM.Jampy_model.inc, R, CM.Jampy_model.distance) )
 
-    MMdm = mge_radial_mass(Jam_Model.surf_dm, 
-                                Jam_Model.sigma_dm, Jam_Model.qobs_dm,
-                                Jam_Model.inc, R, Jam_Model.distance)
-    MMbh = Jam_Model.mbh # Model BH mass
-    MMtotal = MMstar + MMdm  # Total Mass 
-    Mfdm = MMdm / MMtotal    # Dark matter fraction
+    MMdm = float ( mge_radial_mass(CM.Jampy_model.surf_dm, 
+                                CM.Jampy_model.sigma_dm, CM.Jampy_model.qobs_dm,
+                                CM.Jampy_model.inc, R, CM.Jampy_model.distance) )
+    MMbh = float ( CM.Jampy_model.mbh )  # Model BH mass
+
+        # Total Mass
+    MMtotal = MMstar + MMdm
+        # Dark matter fraction
+    Mfdm = MMdm / MMtotal
 
     # Data quantities
-
     # Load the snapshot data
     dm_dataset   = np.load(data_path+"/dm/coordinates_dark.npy")
     star_dataset = np.load(data_path+"/imgs/coordinates_star.npy")
-        
+
         # Stellar content
     rStar = np.sqrt(np.sum(star_dataset[:, 0:3]**2, axis=1)) # radius
     i = rStar <= R_kpc                                       # only particles within R
@@ -159,7 +256,7 @@ def run(result_path, data_path, alpha=2.5):
     Mbh = 1e8 # should be the BH mass from TNG catalogue 
     Mtotal = Mstar + Mdm         # Total snapshot mass within R
     fdm = Mdm/Mtotal             # DM fraction in the snapshot within R
-    
+
     print('=' * term_size.columns)
         # Accuracy in stellar mass
     print("Model stellar Mass: {:.2e} Msun".format( float(MMstar) ))
@@ -185,18 +282,18 @@ def run(result_path, data_path, alpha=2.5):
     Dfdm = float ( (Mfdm - fdm)/fdm )
     print("(Model - Data)/Data: {:.2f}".format( float(Dfdm) ))
 
-        # Radial density profiles
+    # Radial density profiles
     radii    = np.arange(0.1, 10*reff, 0.01)   # Radii in arcsec
-    pc       = Jam_Model.distance*np.pi/0.648  # Constant factor to convert arcsec --> pc
+    pc       = CM.Jampy_model.distance*np.pi/0.648  # Constant factor to convert arcsec --> pc
     radii_pc = radii*pc                        # Radii in pc
 
-    dstar = mge_radial_density(Jam_Model.surf_lum * Jam_Model.ml_model, 
-                                Jam_Model.sigma_lum, Jam_Model.qobs_lum,
-                                Jam_Model.inc, radii, Jam_Model.distance)
+    dstar = mge_radial_density(CM.Jampy_model.surf_lum * CM.Jampy_model.ml_model, 
+                                CM.Jampy_model.sigma_lum, CM.Jampy_model.qobs_lum,
+                                CM.Jampy_model.inc, radii, CM.Jampy_model.distance)
 
-    ddm = mge_radial_density(Jam_Model.surf_dm, 
-                                Jam_Model.sigma_dm, Jam_Model.qobs_dm,
-                                Jam_Model.inc, radii, Jam_Model.distance)
+    ddm = mge_radial_density(CM.Jampy_model.surf_dm, 
+                                CM.Jampy_model.sigma_dm, CM.Jampy_model.qobs_dm,
+                                CM.Jampy_model.inc, radii, CM.Jampy_model.distance)
 
     # Load DM density profile
     from astropy.io import fits
@@ -247,6 +344,7 @@ def run(result_path, data_path, alpha=2.5):
     r = {}
     r["Reff"]   = reff
     r["R"]      = R
+    r["thetaE"] = float(einstein_radius )
     r["Mstar"]  = float( np.log10(Mstar) )
     r["Mdm"]    = float( np.log10(Mdm)   )
     r["Mbh"]    = float( np.log10(Mbh)   )
@@ -272,6 +370,9 @@ if __name__ == '__main__':
     parser.add_option('--alpha', action='store', type=float, dest='alpha',
                       default=2.5, 
                       help='Fraction of the effective radius where the quantities will be measured.')
+    parser.add_option('--phase', action='store', type=str, dest='phase',
+                      default="phase5", 
+                      help='Phase to be analysed.')
 
     (options, args) = parser.parse_args()
     if len(args) != 2:
@@ -281,5 +382,6 @@ if __name__ == '__main__':
     data_path   = args[1] # Path to the data folder
 
     import sys
-    run(result_path=result_path, data_path=data_path, alpha=options.alpha)
+    run(result_path=result_path, data_path=data_path, 
+                    phase_name=options.phase, alpha=options.alpha)
     sys.exit()
