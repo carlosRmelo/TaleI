@@ -59,15 +59,22 @@ export OMP_NUM_THREADS=$omp_threads
 echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 
 	## Dynamical Models only
-python JAM_pipeline-gNFW.py ./8/data --ncores=40
-python JAM_pipeline-gNFW.py ./11/data --ncores=40
-python JAM_pipeline-gNFW.py ./20/data --ncores=40
-python JAM_pipeline-gNFW.py ./56405/data --ncores=40
-python JAM_pipeline-gNFW.py ./56406/data --ncores=40
-python JAM_pipeline-gNFW.py ./83996/data --ncores=40
-python JAM_pipeline-gNFW.py ./313415/data --ncores=40
+python JAM_pipeline-gNFW.py ./83991/data --ncores=40
+python JAM_pipeline-gNFW.py ./84010/data --ncores=40
+python JAM_pipeline-gNFW.py ./7/data --ncores=40
+python JAM_pipeline-gNFW.py ./116278/data --ncores=40
+python JAM_pipeline-gNFW.py ./9/data --ncores=40
+python JAM_pipeline-gNFW.py ./100675/data --ncores=40
+python JAM_pipeline-gNFW.py ./341482/data --ncores=40
+python JAM_pipeline-gNFW.py ./414107/data --ncores=40
+python JAM_pipeline-gNFW.py ./344595/data --ncores=40
+python JAM_pipeline-gNFW.py ./485608/data --ncores=40
+python JAM_pipeline-gNFW.py ./172209/data --ncores=40
+python JAM_pipeline-gNFW.py ./396742/data --ncores=40
+python JAM_pipeline-gNFW.py ./451938/data --ncores=40
+python JAM_pipeline-gNFW.py ./545285/data --ncores=40
 
 	## Combined Model
-python full_pipeline-gNFW.py ./8/data --ncores=40
+python full_pipeline-gNFW.py ./83991/data --ncores=40
 
 

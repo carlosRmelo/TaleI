@@ -6,7 +6,7 @@
 #SBATCH -J TaleI.1		       #Nome job
 #SBATCH --exclusive                    #Utilização exclusiva dos nós durante a execução do job
 #SBATCH --hint=multithread
-#SBATCH --time=7-00:00:00		       #Tempo de execução
+#SBATCH --time=8-00:00:00		       #Tempo de execução
 #SBATCH --mail-type=ALL		       #Envio de email
 #SBATCH --mail-user=carlos.melo@ufrgs.br
 
@@ -50,5 +50,8 @@ echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 echo -e "\n## Random walk. \n"
 
 	## Combined Model
-python full_pipeline-gNFW.py ./313415/data --ncores=48
+python full_pipeline-gNFW.py ./100675/data --ncores=48
+python full_pipeline-gNFW.py ./341482/data --ncores=48
+python full_pipeline-gNFW.py ./414107/data --ncores=48
+python full_pipeline-gNFW.py ./116278/data --ncores=48
 

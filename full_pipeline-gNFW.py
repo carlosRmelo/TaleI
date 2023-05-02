@@ -189,7 +189,7 @@ def run(data_path, ncores):
     ph4 = Ph4Model(output_path=output_path, instance=ph3)
     ph4.config_non_linear(n_cores=ncores)
         ## Update the source galaxy priors based on the simulated data
-    New_sourcePriors = {"pixels": p.UniformPrior(25, 300) }
+    New_sourcePriors = {"pixels": p.UniformPrior(10, 300) }
     ph4.config_pixelized_source(New_sourcePriors)
 
     ph4.run_dynesty(maxiter=300)
