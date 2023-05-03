@@ -3,7 +3,7 @@
 # as their comparison with the reference values.
 
 
-
+import sys
 from optparse import OptionParser
 
 from dynesty import NestedSampler
@@ -280,6 +280,6 @@ if __name__ == '__main__':
     result_path = args[0] # Path to the results folder
     data_path   = args[1] # Path to the data folder
 
-    import sys
+   
     run(result_path=result_path, data_path=data_path, alpha=options.alpha)
     sys.exit()
