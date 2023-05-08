@@ -1,0 +1,22 @@
+Model phase4
+
+z_l 0.1972841823760099
+z_s     0.5324
+
+         Lens Galaxy
+inc                        Fixed(83.28711031960668)
+beta                       Fixed(0.3168403221742111)
+ml                         Fixed(2.1531954918196288)
+log_rho_s                  Fixed(-3.1183090605632686)
+rs                         Fixed(22.97843431233818)
+qDM                        Fixed(1.0)
+slope                      Fixed(1.3651951164968912)
+gamma                      Fixed(1.0)
+
+       Source Galaxy
+pixels                   Uniform(10, 300)
+weight_floor             Uniform(0.0, 1.0)
+weight_power             Uniform(0.0, 20.0)
+inner_coefficient       LogUniform(1e-06, 1000000.0)
+outer_coefficient       LogUniform(1e-06, 1000000.0)
+signal_scale             Uniform(0.0, 1.0)

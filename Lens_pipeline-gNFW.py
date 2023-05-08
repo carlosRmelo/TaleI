@@ -130,7 +130,7 @@ def run(data_path, ncores):
     ph1.config_non_linear(n_cores=ncores, nlive=180)
 
         #Run Phase1 nested sampler
-    ph1.run_dynesty(maxiter=25)
+    ph1.run_dynesty(maxiter=300)
 
     from dyLens.pipelines.phase_2 import Ph2Model
 
