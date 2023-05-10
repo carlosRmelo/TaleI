@@ -59,9 +59,9 @@ export OMP_NUM_THREADS=$omp_threads
 echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 
 
-	## Combined Model
-python full_pipeline-gNFW.py ./84010/data --ncores=40
-python full_pipeline-gNFW.py ./7/data --ncores=40
+	## Lens Model
+python Lens_pipeline-gNFW.py ./83996/data --ncores=40
+python Lens_pipeline-gNFW.py ./84010/data --ncores=40
 
 
 

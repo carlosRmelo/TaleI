@@ -6,7 +6,7 @@
 #SBATCH -J TaleI.3		       #Nome job
 #SBATCH --exclusive                    #Utilização exclusiva dos nós durante a execução do job
 #SBATCH --hint=multithread
-#SBATCH --time=7-00:00:00		       #Tempo de execução
+#SBATCH --time=8-00:00:00		       #Tempo de execução
 #SBATCH --mail-type=ALL		       #Envio de email
 #SBATCH --mail-user=carlos.melo@ufrgs.br
 
@@ -49,8 +49,8 @@ export OMP_NUM_THREADS=$omp_threads
 echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 echo -e "\n## Random walk. \n"
 
-	## Combined Model
-python full_pipeline-gNFW.py ./391938/data --ncores=48
-python full_pipeline-gNFW.py ./451938/data --ncores=48
-python full_pipeline-gNFW.py ./545285/data --ncores=48
-
+	## Lens Model
+python Lens_pipeline-gNFW.py ./545285/data --ncores=48
+python Lens_pipeline-gNFW.py ./56405/data --ncores=48
+python Lens_pipeline-gNFW.py ./56406/data --ncores=48
+python Lens_pipeline-gNFW.py ./7/data --ncores=48

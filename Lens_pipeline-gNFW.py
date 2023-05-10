@@ -1,6 +1,6 @@
-# ## Testing the a full Pipeline
+# ## Only Lens Pipeline
 # 
-# Model: DM parametrized by gNFW, black hole, scalar anisotropy, 
+# Model: DM parametrized by gNFW,
 # scalar mass-to-light ratio. The ideia is testing the TNG50 simulation
 # 
 # Date: 16/03/2023
@@ -123,11 +123,11 @@ def run(data_path, ncores):
 
         ## Initialize the phase1
     from dyLens.pipelines.phase_1 import Ph1Model
-    output_path = data_path.split("/")[1]+"/model3"
+    output_path = data_path.split("/")[1]+"/model1/Lens"
     ph1 = Ph1Model(CombinedModel=CM, output_path=output_path)
 
         ## Update the non-linear sampler to save some time
-    ph1.config_non_linear(n_cores=ncores, nlive=180)
+    ph1.config_non_linear(n_cores=ncores, nlive=1000)
 
         #Run Phase1 nested sampler
     ph1.run_dynesty(maxiter=300)

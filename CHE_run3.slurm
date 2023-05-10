@@ -2,7 +2,7 @@
 ##
 ## Copyright (C) 2009-2017 VersatusHPC, Inc.
 ##
-#SBATCH --job-name=TaleI.1  # create a name for your job
+#SBATCH --job-name=TaleI.2  # create a name for your job
 ## nodes = quantidade de nodes
 #SBATCH --nodes=1
 ##
@@ -58,8 +58,11 @@ export OMP_NUM_THREADS=$omp_threads
 
 echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 
+
 	## Lens Model
-python Lens_pipeline-gNFW.py ./8/data --ncores=40
-python Lens_pipeline-gNFW.py ./83991/data --ncores=40
+python Lens_pipeline-gNFW.py ./9/data --ncores=40
+python Lens_pipeline-gNFW.py ./451938/data --ncores=40
+
+
 
 
