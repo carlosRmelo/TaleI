@@ -13,6 +13,7 @@ from dynesty import utils as dyfunc
 
 import numpy as np
 import matplotlib.pyplot as plt
+from astropy.io import fits
 
 plt.rcParams['xtick.labelsize']= 12
 plt.rcParams['ytick.labelsize']= 12
@@ -29,9 +30,12 @@ from astropy import units as u
 
 
 
-def run(result_path, data_path, alpha=2.5):
-    analysis_path = result_path+"/Analysis/" # path where the analysis will be saved
-    os.makedirs(analysis_path)              # create the analysis folder
+def run(result_path, data_path, alpha=None, Re=None):
+    if Re:
+        analysis_path = result_path+"/Analysis_Re/"                       # path where the analysis will be saved
+    else:
+        analysis_path = result_path+"/Analysis_{:.1f}Reff/".format(alpha) # path where the analysis will be saved
+    os.makedirs(analysis_path)               # create the analysis folder
 
         # Load sampler and model
     with open(result_path+f'/Final_sampler.pickle','rb') as f:
@@ -123,7 +127,10 @@ def run(result_path, data_path, alpha=2.5):
                                                 Jam_Model.distance)
     
     #  Model quantities
-    R     = alpha*reff    # alpha times the Reff in arcsec
+    if Re:
+        R = Re          # Einstein ring in arcsec
+    else: 
+        R = alpha*reff  # alpha times the Reff in arcsec
     R_kpc = ( (R*u.arcsec * Jam_Model.distance*u.Mpc ).to(
                         u.kpc,u.dimensionless_angles()) ).value # value in kpc
 
@@ -136,11 +143,12 @@ def run(result_path, data_path, alpha=2.5):
     MMdm = mge_radial_mass(Jam_Model.surf_dm, 
                                 Jam_Model.sigma_dm, Jam_Model.qobs_dm,
                                 Jam_Model.inc, R, Jam_Model.distance)
-    MMbh = Jam_Model.mbh # Model BH mass
+    MMbh = Jam_Model.mbh     # Model BH mass
     MMtotal = MMstar + MMdm  # Total Mass 
     Mfdm = MMdm / MMtotal    # Dark matter fraction
 
     # Data quantities
+    info = fits.open(data_path+"/imgs/log_img.fits")[1].data
 
     # Load the snapshot data
     dm_dataset   = np.load(data_path+"/dm/coordinates_dark.npy")
@@ -155,10 +163,12 @@ def run(result_path, data_path, alpha=2.5):
     rDM = np.sqrt(np.sum(dm_dataset[:, 0:3]**2, axis=1))
     i = rDM <= R_kpc
     Mdm = sum(dm_dataset[:,3][i]*1e10)
-
-    Mbh = 1e8 # should be the BH mass from TNG catalogue 
-    Mtotal = Mstar + Mdm         # Total snapshot mass within R
-    fdm = Mdm/Mtotal             # DM fraction in the snapshot within R
+    if info["logMbh"].size != 1: #If there is more than one BH
+        Mbh = list(np.float_(info["logMbh"][0])) # Sould be the BH mass from TNG catalogue 
+    else:
+        Mbh = float( info["logMbh"] ) # Sould be the BH mass from TNG catalogue 
+    Mtotal = Mstar + Mdm        # Total snapshot mass within R
+    fdm    = Mdm/Mtotal         # DM fraction in the snapshot within R
     
     print('=' * term_size.columns)
         # Accuracy in stellar mass
@@ -199,11 +209,10 @@ def run(result_path, data_path, alpha=2.5):
                                 Jam_Model.inc, radii, Jam_Model.distance)
 
     # Load DM density profile
-    from astropy.io import fits
     dm_hdu = fits.open(data_path+"/dm/density_fit.fits")
     true_density = dm_hdu[1].data["density"]
-    true_radii = dm_hdu[1].data["radius"]
-    dm_fit = dm_hdu[1].data["bestfit"]
+    true_radii   = dm_hdu[1].data["radius"]
+    dm_fit       = dm_hdu[1].data["bestfit"]
 
     i = true_radii < radii_pc.max()
 
@@ -212,15 +221,15 @@ def run(result_path, data_path, alpha=2.5):
     dm_fit = dm_fit[i]
 
     # Load star density profile
-    star_hdu = fits.open(data_path+"/imgs/stellar_density.fits")
+    star_hdu  = fits.open(data_path+"/imgs/stellar_density.fits")
     rho_stars = star_hdu[1].data["density"]
-    r_star = star_hdu[1].data["radius"]
+    r_star    = star_hdu[1].data["radius"]
 
 
     i = r_star < radii_pc.max()
 
     rho_stars = rho_stars[i]
-    r_star   = r_star[i]
+    r_star    = r_star[i]
 
     plt.figure(figsize=(15,8))
 
@@ -246,10 +255,10 @@ def run(result_path, data_path, alpha=2.5):
     # Save quantities
     r = {}
     r["Reff"]   = reff
-    r["R"]      = R
+    r["R"]      = float( R )
     r["Mstar"]  = float( np.log10(Mstar) )
     r["Mdm"]    = float( np.log10(Mdm)   )
-    r["Mbh"]    = float( np.log10(Mbh)   )
+    r["Mbh"]    = Mbh
     r["Mtotal"] = float( np.log10(Mtotal) )
     r["fdm"]    = fdm
     r["MMstar"]  = float( np.log10(MMstar) )
@@ -270,16 +279,29 @@ if __name__ == '__main__':
     term_size = os.get_terminal_size()
     parser = OptionParser() #You also should inform the folder name
     parser.add_option('--alpha', action='store', type=float, dest='alpha',
-                      default=2.5, 
+                      default=None, 
                       help='Fraction of the effective radius where the quantities will be measured.')
-
+    parser.add_option('--Re', action='store', type=float, dest='Re',
+                      default=None, 
+                      help='Einstein radius, in arcsec, where the quantities are measured.')
+    
     (options, args) = parser.parse_args()
     if len(args) != 2:
         print('Error - please provide the paths to results and data.')
         sys.exit(1)
+    
+    if options.alpha and options.Re:
+        print('alpha and Re parameters cannot be settled at the same time.')
+        sys.exit(1)
+    elif (not options.alpha) and (not options.Re):
+        print('You must set alpha or Re.')
+        sys.exit(1)
+    else: pass
+
+
     result_path = args[0] # Path to the results folder
     data_path   = args[1] # Path to the data folder
 
    
-    run(result_path=result_path, data_path=data_path, alpha=options.alpha)
+    run(result_path=result_path, data_path=data_path, alpha=options.alpha, Re=options.Re)
     sys.exit()
