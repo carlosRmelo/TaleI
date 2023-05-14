@@ -158,6 +158,7 @@ def run(data_path, ncores):
 
     ph5 = Ph5Model(output_path=output_path, instance=ph4, 
                     n_likelihoods=350, n_cores=ncores, threshold=0.2)
+    ph5.lens_likelihood_cap = ph5.lens_likelihood_cap + ph5.lens_likelihood_cap*0.2
     ph5.config_non_linear(n_cores=ncores, nlive=500)
     ph5.run_dynesty(maxiter=300)
 
