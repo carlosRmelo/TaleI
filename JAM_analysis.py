@@ -28,6 +28,8 @@ from jampy.mge_radial_mass import mge_radial_mass
 from jampy.mge_half_light_isophote import mge_half_light_isophote
 from astropy import units as u
 
+from util import quantities2D, quantities3D
+from dyLens.utils import effective_einstein_radius_from_kappa, enclosed2D
 
 
 def run(result_path, data_path, alpha=None, Re=None):
@@ -106,15 +108,27 @@ def run(result_path, data_path, alpha=None, Re=None):
                     "Mbh":   "True BH mass within R, in log10.", 
                     "Mtotal":"True total mass within R, in log10.", 
                     "fdm":   "Fraction of DM within R.",
+                    "projMstar": "Projected true stellar mass within R, in log10.", 
+                    "projMdm":   "Projected true dm mass within R, in log10.", 
+                    "projMtotal":"Projected true total mass within R, in log10.", 
+                    "projfdm":   "Projected fraction of DM within R.",
                     "MMstar": "Model stellar mass within R, in log10.", 
                     "MMdm":   "Model dm mass within R, in log10.", 
                     "MMbh":   "Model BH mass within R, in log10.", 
                     "MMtotal":"Model total mass within R, in log10.", 
                     "Mfdm":   "Model DM fraction within R.",
+                    "projMMstar": "Projected model stellar mass within R, in log10.", 
+                    "projMMdm":   "Projected model dm mass within R, in log10.", 
+                    "projMMtotal":"Projected model total mass within R, in log10.", 
+                    "projMfdm":   "Projected model DM fraction within R.",
                     "Dstar":  "(MMstar - Mstar)/Mstar",
                     "Ddm":    "(MMdm - Mdm)/Mdm",
                     "Dtotal": "(MMtotal - Mtotal)/Mtotal",
-                    "Dfdm":   "(Mfdm - fdm)/fdm"
+                    "Dfdm":   "(Mfdm - fdm)/fdm",
+                    "projDstar":  "proj (MMstar - Mstar)/Mstar",
+                    "projDdm":    "proj (MMdm - Mdm)/Mdm",
+                    "projDtotal": "proj (MMtotal - Mtotal)/Mtotal",
+                    "projDfdm":   "proj (Mfdm - fdm)/fdm"
                 }
     json.dump(description, out_descripition, indent = 8)
     out_descripition.close()
@@ -134,7 +148,7 @@ def run(result_path, data_path, alpha=None, Re=None):
     R_kpc = ( (R*u.arcsec * Jam_Model.distance*u.Mpc ).to(
                         u.kpc,u.dimensionless_angles()) ).value # value in kpc
 
-
+            # 3D quantities
         # Get the radial mass of stars and DM within R
     MMstar =  mge_radial_mass(Jam_Model.surf_lum * Jam_Model.ml_model, 
                                 Jam_Model.sigma_lum, Jam_Model.qobs_lum,
@@ -147,6 +161,18 @@ def run(result_path, data_path, alpha=None, Re=None):
     MMtotal = MMstar + MMdm  # Total Mass 
     Mfdm = MMdm / MMtotal    # Dark matter fraction
 
+            # 2D quantities
+        # Get the radial projected mass of stars and DM within R
+    projMMstar =  enclosed2D(Jam_Model.surf_lum * Jam_Model.ml_model,
+                                Jam_Model.sigma_lum, Jam_Model.qobs_lum,
+                                a=0, b=R, distance=Jam_Model.distance)
+
+    projMMdm = enclosed2D(Jam_Model.surf_dm,
+                                Jam_Model.sigma_dm, Jam_Model.qobs_dm,
+                                a=0, b=R, distance=Jam_Model.distance)
+    projMMtotal = projMMstar + projMMdm  # Total projected Mass 
+    projMfdm = projMMdm / projMMtotal    # Projected Dark matter fraction
+
     # Data quantities
     info = fits.open(data_path+"/imgs/log_img.fits")[1].data
 
@@ -154,22 +180,15 @@ def run(result_path, data_path, alpha=None, Re=None):
     dm_dataset   = np.load(data_path+"/dm/coordinates_dark.npy")
     star_dataset = np.load(data_path+"/imgs/coordinates_star.npy")
         
-        # Stellar content
-    rStar = np.sqrt(np.sum(star_dataset[:, 0:3]**2, axis=1)) # radius
-    i = rStar <= R_kpc                                       # only particles within R
-    Mstar = sum(star_dataset[:, 6][i]*1e10)                  # mass within   R
+    Mstar, Mdm, Mbh, Mtotal, fdm = quantities3D(star_dataset=star_dataset,
+                                                    dm_dataset=dm_dataset, 
+                                                    info=info, R_kpc=R_kpc) # 3D quantities
 
-        # Dark content
-    rDM = np.sqrt(np.sum(dm_dataset[:, 0:3]**2, axis=1))
-    i = rDM <= R_kpc
-    Mdm = sum(dm_dataset[:,3][i]*1e10)
-    if info["logMbh"].size != 1: #If there is more than one BH
-        Mbh = list(np.float_(info["logMbh"][0])) # Sould be the BH mass from TNG catalogue 
-    else:
-        Mbh = float( info["logMbh"] ) # Sould be the BH mass from TNG catalogue 
-    Mtotal = Mstar + Mdm        # Total snapshot mass within R
-    fdm    = Mdm/Mtotal         # DM fraction in the snapshot within R
-    
+    projMstar, projMdm, Mbh, projMtotal, projfdm = quantities2D(star_dataset=star_dataset,
+                                                                    dm_dataset=dm_dataset, 
+                                                                    info=info, R_kpc=R_kpc) # 2D quantities
+
+    print("3D results")
     print('=' * term_size.columns)
         # Accuracy in stellar mass
     print("Model stellar Mass: {:.2e} Msun".format( float(MMstar) ))
@@ -194,6 +213,32 @@ def run(result_path, data_path, alpha=None, Re=None):
     print("Data  DM fraction: {:.2f}".format( float(fdm) ))
     Dfdm = float ( (Mfdm - fdm)/fdm )
     print("(Model - Data)/Data: {:.2f}".format( float(Dfdm) ))
+
+    print("\n\n\n 2D results")
+    print('=' * term_size.columns)
+        # Accuracy in proj stellar mass
+    print("Model proj stellar Mass: {:.2e} Msun".format( float(projMMstar) ))
+    print("Data  proj stellar Mass: {:.2e} Msun".format( float(projMstar) ))
+    projDstar = float ( (projMMstar - projMstar)/projMstar )
+    print("(Model - Data)/Data: {:.2f}".format( float(projDstar) ))
+    print('=' * term_size.columns)
+        # Accuracy in Dm mass
+    print("Model proj dm Mass: {:.2e} Msun".format( float(projMMdm) ))
+    print("Data  proj dm Mass: {:.2e} Msun".format( float(projMdm) ))
+    projDdm = float ( (projMMdm - projMdm)/projMdm )
+    print("(Model - Data)/Data: {:.2f}".format( float(projDdm) ))
+    print('=' * term_size.columns)
+        # Accuracy in total mass
+    print("Model proj total Mass: {:.2e} Msun".format( float(projMMtotal) ))
+    print("Data  proj total Mass: {:.2e} Msun".format( float(projMtotal) ))
+    projDtotal = float ( (projMMtotal - projMtotal)/projMtotal )
+    print("(Model - Data)/Data: {:.2f}".format( float(projDtotal) ))
+    print('=' * term_size.columns)
+        # Accuracy in dm fraction
+    print("Model proj DM fraction: {:.2f}".format( float(projMfdm) ))
+    print("Data  proj DM fraction: {:.2f}".format( float(projfdm) ))
+    projDfdm = float ( (projMfdm - projfdm)/projfdm )
+    print("(Model - Data)/Data: {:.2f}".format( float(projDfdm) ))
 
         # Radial density profiles
     radii    = np.arange(0.1, 10*reff, 0.01)   # Radii in arcsec
@@ -261,15 +306,28 @@ def run(result_path, data_path, alpha=None, Re=None):
     r["Mbh"]    = Mbh
     r["Mtotal"] = float( np.log10(Mtotal) )
     r["fdm"]    = fdm
+    r["projMstar"]  = float( np.log10(projMstar) )
+    r["projMdm"]    = float( np.log10(projMdm)   )
+    r["projMtotal"] = float( np.log10(projMtotal) )
+    r["projfdm"]    = projfdm
     r["MMstar"]  = float( np.log10(MMstar) )
     r["MMdm"]    = float( np.log10(MMdm)   )
     r["MMbh"]    = float( np.log10(MMbh)   )
     r["MMtotal"] = float( np.log10(MMtotal) )
     r["Mfdm"]    = float( Mfdm )
+    r["projMMstar"]  = float( np.log10(projMMstar) )
+    r["projMMdm"]    = float( np.log10(projMMdm)   )
+    r["projMMtotal"] = float( np.log10(projMMtotal) )
+    r["projMfdm"]    = float( projMfdm )
     r["Dstar"]   = Dstar
     r["Ddm"]     = Ddm
     r["Dtotal"]  = Dtotal
     r["Dfdm"]    = Dfdm
+    r["projDstar"]   = projDstar
+    r["projDdm"]     = projDdm
+    r["projDtotal"]  = projDtotal
+    r["projDfdm"]    = projDfdm
+
     # the json file where the output must be stored
     out_r = open("{}/quantities.json".format(analysis_path), "w")
     json.dump(r, out_r, indent = 8)
