@@ -250,8 +250,19 @@ def _dyLens_Lens_analysis(CM, R, dyLens=None):
                                     z=CM.Lens_model.z_l, cosmology=CM.cosmology)
         projMMtotal = projMMstar + projMMdm  # Total projected Mass 
         projMfdm = projMMdm / projMMtotal    # Projected Dark matter fraction
+        
+        
+        # kappa MGE model. Uses the same grid as the lens image
+    kappa_model = CM.Lens_model.convergence_2d_from(CM.Fit.imaging.unmasked.grid)
 
-    return MMstar, MMdm, MMbh, MMtotal, Mfdm, projMMstar, projMMdm, projMMtotal, projMfdm
+        # Calculates model the Einstein ring
+        # Uses the same grid as the lens image
+    Re_model = effective_einstein_radius_from_kappa(kappa_model, 
+                                                    grid_spacing=CM.Fit.image.pixel_scale,
+                                                    grid=CM.Fit.imaging.unmasked.grid, 
+                                                    Nsamples=CM.Fit.imaging.unmasked.grid.shape[0]/2)
+
+    return MMstar, MMdm, MMbh, MMtotal, Mfdm, projMMstar, projMMdm, projMMtotal, projMfdm, Re_model
 
 def _3D_density_profile(Jam_Model, reff, data_path, analysis_path, ):
     # Radial density profiles
@@ -397,12 +408,14 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     else:
         _dyLens_Lens_figs(phase=phase, CM=CM, parsRes=parsRes, 
                             phase_name=phase_name, 
-                            analysis_path=analysis_path)
+                            analysis_path=analysis_path, 
+                            dyLens=dyLens)
        
         # Creates a json file with the description of the measured quantities
     out_descripition = open("{}/description.json".format(analysis_path), "w")
     description = { "Reff":  "MGE effetive radius, in arcsec.",
                     "R":     "Radius where quantities were measured, in arcsec.",
+                    "MthetaE": "True Einstein Ring in arcsec",
                     "Mstar": "True stellar mass within R, in log10.", 
                     "Mdm":   "True dm mass within R, in log10.", 
                     "Mbh":   "True BH mass within R, in log10.", 
@@ -417,6 +430,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                     "MMbh":   "Model BH mass within R, in log10.", 
                     "MMtotal":"Model total mass within R, in log10.", 
                     "Mfdm":   "Model DM fraction within R.",
+                    "MMthetaE": "Measured Einstein Ring in arcsec",
                     "projMMstar": "Projected model stellar mass within R, in log10.", 
                     "projMMdm":   "Projected model dm mass within R, in log10.", 
                     "projMMtotal":"Projected model total mass within R, in log10.", 
@@ -428,7 +442,8 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                     "projDstar":  "proj (MMstar - Mstar)/Mstar",
                     "projDdm":    "proj (MMdm - Mdm)/Mdm",
                     "projDtotal": "proj (MMtotal - Mtotal)/Mtotal",
-                    "projDfdm":   "proj (Mfdm - fdm)/fdm"
+                    "projDfdm":   "proj (Mfdm - fdm)/fdm",
+                    "DthetaE": "(MthetaE - MMthetaE)/MthetaE"
                 }
     json.dump(description, out_descripition, indent = 8)
     out_descripition.close()
@@ -451,8 +466,21 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                                                     distance)
     
     #  Model quantities
+    if dyLens or Lens:
+        # Einstein ring 
+            # surface mass density in 1e10 Msun/kpc2
+        sigma_M    = fits.open(data_path+"/imgs/surface_mass_density.fits")[0]        
+            # kappa from data. The critical density is in Msun/Mpc2, so I convert it to Msun/kpc2
+        kappa_data = (sigma_M.data*1e10)/ ( CM.Lens_model.critical_density/(1e3)**2 )
+        Re_data  = effective_einstein_radius_from_kappa(kappa_data, 
+                                                        grid_spacing=CM.Fit.image.pixel_scale,
+                                                        grid=CM.Fit.imaging.unmasked.grid)
+    else: pass
+
     if Re:
-        R = Re          # Einstein ring in arcsec
+        if JAM:
+            raise ValueError("Jampy model is not able to infer the Einstein radius alone.")
+        R = Re_data          # Einstein ring in arcsec
     else: 
         R = alpha*reff  # alpha times the Reff in arcsec
     R_kpc = ( (R*u.arcsec * distance*u.Mpc ).to(
@@ -461,10 +489,18 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     if JAM:
         MMstar, MMdm, MMbh, MMtotal, Mfdm, \
             projMMstar, projMMdm, projMMtotal, projMfdm = _JAM_analysis(Jam_Model=Jam_Model, R=R)
+        Re_model = Re_data = DthetaE = 0
     else:
         MMstar, MMdm, MMbh, MMtotal, Mfdm, \
-             projMMstar, projMMdm, projMMtotal, projMfdm = _dyLens_Lens_analysis(CM=CM, R=R, dyLens=dyLens)
-
+             projMMstar, projMMdm, projMMtotal, projMfdm, \
+                Re_model = _dyLens_Lens_analysis(CM=CM, R=R, dyLens=dyLens)
+        
+        print("Model Einstein ring: {:.2e} Msun".format( float(Re_model) ))
+        print("Data  Einstein ring: {:.2e} Msun".format( float(Re_data) ))
+        DthetaE = float ( (Re_data - Re_model)/Re_data )
+        print("(Model - Data)/Data: {:.2f}".format( float(DthetaE) ))
+        print('=' * term_size.columns)
+        
 
         # Data quantities
     info = fits.open(data_path+"/imgs/log_img.fits")[1].data
@@ -545,6 +581,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     r = {}
     r["Reff"]   = reff
     r["R"]      = float( R )
+    r["MthetaE"]= float( Re_data )
     r["Mstar"]  = float( np.log10(Mstar) )
     r["Mdm"]    = float( np.log10(Mdm)   )
     r["Mbh"]    = Mbh
@@ -559,6 +596,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     r["MMbh"]    = float( np.log10(MMbh)   )
     r["MMtotal"] = float( np.log10(MMtotal) )
     r["Mfdm"]    = float( Mfdm )
+    r["MMthetaE"]= float (Re_model)
     r["projMMstar"]  = float( np.log10(projMMstar) )
     r["projMMdm"]    = float( np.log10(projMMdm)   )
     r["projMMtotal"] = float( np.log10(projMMtotal) )
@@ -571,6 +609,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     r["projDdm"]     = projDdm
     r["projDtotal"]  = projDtotal
     r["projDfdm"]    = projDfdm
+    r["DthetaE"]     = DthetaE 
 
     # the json file where the output must be stored
     out_r = open("{}/quantities.json".format(analysis_path), "w")
@@ -583,10 +622,7 @@ if __name__ == '__main__':
     parser.add_option('--alpha', action='store', type=float, dest='alpha',
                       default=None, 
                       help='Fraction of the effective radius where the quantities will be measured.')
-    parser.add_option('--Re', action='store', type=float, dest='Re',
-                      default=None, 
-                      help='Einstein radius, in arcsec, where the quantities are measured.')
-    
+       
     parser.add_option('--JAM', action='store_true', dest='JAM',
                     default=False, 
                     help='Flag to analyse JAM results')
@@ -599,6 +635,9 @@ if __name__ == '__main__':
     parser.add_option('--phase', action='store', type=str, dest='phase',
                     default='None', 
                     help='Phase to be analysed.')
+    parser.add_option('--Re', action='store_true', dest='Re',
+                      default=False, 
+                      help='Flag to analyse results inside the Einstein ring.')
     
     (options, args) = parser.parse_args()
     if len(args) != 2:
