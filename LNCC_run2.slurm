@@ -50,8 +50,8 @@ echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 echo -e "\n## Random walk. \n"
 
 	## Lens Model
-python Lens_pipeline-gNFW.py ./341482/data --ncores=48
-python Lens_pipeline-gNFW.py ./344595/data --ncores=48
-python Lens_pipeline-gNFW.py ./396742/data --ncores=48
-python Lens_pipeline-gNFW.py ./414107/data --ncores=48
-python Lens_pipeline-gNFW.py ./455608/data --ncores=48
+python shear_pipeline.py ./341482/data --ncores=48
+python shear_pipeline.py ./344595/data --ncores=48
+python shear_pipeline.py ./396742/data --ncores=48
+python shear_pipeline.py ./414107/data --ncores=48
+python shear_pipeline.py ./455608/data --ncores=48
