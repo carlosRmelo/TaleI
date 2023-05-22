@@ -86,7 +86,8 @@ def run(data_path, ncores):
     Jam_Model = JAM.axi_rms(ybin=y0, xbin=x0, z=z_l, rms=vrms, erms=0.11*vrms,
                             tensor="zz", 
                             pixsize=pixsize,
-                            quiet=True)
+                            cosmology=cosmo,
+                            quiet=True,)
 
     # Define the MGE inputs
     Jam_Model.components(surf_lum=surf, sigma_lum=sigma, qobs_lum=qObs, )
@@ -113,10 +114,10 @@ def run(data_path, ncores):
     Jam_Model.build_model(parsDic)
 
     #Config non-linear search
-    Jam_Model.config_non_linear(nlive=500, n_cores=ncores,)
-    output_path = data_path.split("/")[1]+"/model1"
+    Jam_Model.config_non_linear(nlive=25, n_cores=ncores,)
+    output_path = data_path.split("/")[1]+"/test"
 
-    Jam_Model.run_dynesty(maxiter=80, output_path=output_path)
+    Jam_Model.run_dynesty(maxiter=20, output_path=output_path)
 
 
 if __name__ == '__main__':
