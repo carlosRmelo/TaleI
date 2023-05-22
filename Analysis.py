@@ -32,7 +32,7 @@ import autolens as al
 import autolens.plot as aplt
 
 from util import quantities2D, quantities3D
-from dyLens.utils import effective_einstein_radius_from_kappa, enclosed2D
+from dyLens.utils.tools import effective_einstein_radius_from_kappa, enclosed2D
 from dyLens.Combined import updt_model
 from copy import deepcopy
 

@@ -201,3 +201,4 @@
 2023-05-04 01:49:48,164 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
 2023-05-04 08:39:40,316 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
 2023-05-10 10:58:40,406 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 2417 image-pixels
+2023-05-22 13:26:10,185 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 2417 image-pixels

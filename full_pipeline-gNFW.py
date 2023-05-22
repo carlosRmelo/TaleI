@@ -113,7 +113,7 @@ def run(data_path, ncores):
     Jam_Model = JAM.axi_rms(ybin=y0, xbin=x0, z=z_l, rms=vrms, erms=0.11*vrms,
                             tensor="zz", 
                             pixsize=pixsize,
-                            quiet=True)
+                            quiet=True, cosmology=cosmo)
 
     # Define the MGE inputs
     Jam_Model.components(surf_lum=surf, sigma_lum=sigma, qobs_lum=qObs, )
@@ -123,7 +123,7 @@ def run(data_path, ncores):
     Jam_Model.include_dm("gNFW")
 
     # Lens model
-    mge_mass_profile = Lens.mass_profile.MGE()  #initialize the class
+    mge_mass_profile = Lens.mass_profile.MGE(cosmology=cosmo)  #initialize the class
         
         #Setting the parameters
     mge_mass_profile.MGE_comps(z_l=z_l, z_s=z_s, 
