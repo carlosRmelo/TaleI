@@ -211,3 +211,4 @@
 2023-05-23 10:38:53,046 - root - WARNING - Too few points to create valid contours
 2023-05-23 10:38:53,078 - root - WARNING - Too few points to create valid contours
 2023-05-23 10:38:53,102 - root - WARNING - Too few points to create valid contours
+2023-05-23 14:13:19,546 - matplotlib.legend - WARNING - No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
