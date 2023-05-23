@@ -202,3 +202,12 @@
 2023-05-04 08:39:40,316 - autoarray.dataset.imaging - INFO - IMAGING - Computing W-Tilde... May take a moment.
 2023-05-10 10:58:40,406 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 2417 image-pixels
 2023-05-22 13:26:10,185 - autoarray.dataset.imaging - INFO - IMAGING - Data masked, contains a total of 2417 image-pixels
+2023-05-23 10:38:37,887 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:37,953 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:37,980 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:47,503 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:47,540 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:47,560 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:53,046 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:53,078 - root - WARNING - Too few points to create valid contours
+2023-05-23 10:38:53,102 - root - WARNING - Too few points to create valid contours
