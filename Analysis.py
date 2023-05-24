@@ -32,7 +32,7 @@ import autolens as al
 import autolens.plot as aplt
 
 from util import quantities2D, quantities3D
-from dyLens.utils.tools import effective_einstein_radius_from_kappa, enclosed2D
+from dyLens.utils.tools import effective_einstein_radius_from_kappa, mge_radial_mass2d
 from dyLens.Combined import updt_model
 from copy import deepcopy
 
@@ -183,11 +183,11 @@ def _JAM_analysis(Jam_Model, R):
 
             # 2D quantities
         # Get the radial projected mass of stars and DM within R
-    projMMstar =  enclosed2D(Jam_Model.surf_lum * Jam_Model.ml_model,
+    projMMstar =  mge_radial_mass2d(Jam_Model.surf_lum * Jam_Model.ml_model,
                                 Jam_Model.sigma_lum, Jam_Model.qobs_lum,
                                 a=0, b=R, distance=Jam_Model.distance)
 
-    projMMdm = enclosed2D(Jam_Model.surf_dm,
+    projMMdm = mge_radial_mass2d(Jam_Model.surf_dm,
                                 Jam_Model.sigma_dm, Jam_Model.qobs_dm,
                                 a=0, b=R, distance=Jam_Model.distance)
     projMMtotal = projMMstar + projMMdm  # Total projected Mass 
@@ -215,12 +215,12 @@ def _dyLens_Lens_analysis(CM, R, dyLens=None):
 
             # 2D quantities
         # Get the radial projected mass of stars and DM within R
-        projMMstar =  enclosed2D(CM.Lens_model.surf_lum * CM.ml_model,
+        projMMstar =  mge_radial_mass2d(CM.Lens_model.surf_lum * CM.ml_model,
                                     CM.Lens_model.sigma_lum, CM.Lens_model.qobs_lum,
                                     a=0, b=R, 
                                     z=CM.Lens_model.z_l, cosmology=CM.cosmology)
 
-        projMMdm = enclosed2D(CM.Jampy_model.surf_dm,
+        projMMdm = mge_radial_mass2d(CM.Jampy_model.surf_dm,
                                     CM.Jampy_model.sigma_dm, CM.Jampy_model.qobs_dm,
                                     a=0, b=R, 
                                     z=CM.Lens_model.z_l, cosmology=CM.cosmology)
@@ -233,7 +233,7 @@ def _dyLens_Lens_analysis(CM, R, dyLens=None):
         MMstar = MMdm = MMbh = MMtotal = Mfdm = 0.0  # Lens only is not sensitive to them.
             # 2D quantities
         # Get the radial projected mass of stars and DM within R
-        projMMstar =  enclosed2D(CM.Lens_model.surf_lum * CM.ml_model,
+        projMMstar =  mge_radial_mass2d(CM.Lens_model.surf_lum * CM.ml_model,
                                     CM.Lens_model.sigma_lum, CM.Lens_model.qobs_lum,
                                     a=0, b=R, 
                                     z=CM.Lens_model.z_l, cosmology=CM.cosmology)
@@ -243,7 +243,7 @@ def _dyLens_Lens_analysis(CM, R, dyLens=None):
         CM_dm.include_DM_MGE(profile=CM_dm.dm_profile_name)
         updt_model.Updt_DM_MGE(CM_dm)
 
-        projMMdm = enclosed2D(CM_dm.surf_dm_model,
+        projMMdm = mge_radial_mass2d(CM_dm.surf_dm_model,
                                     CM_dm.sigma_dm_model,
                                     np.full_like(CM_dm.surf_dm_model, CM.parsDic["qDM"]),
                                     a=0, b=R,
