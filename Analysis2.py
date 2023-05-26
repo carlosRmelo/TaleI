@@ -222,7 +222,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
             # 3D Quantities
         MMstar  = A.stellarMass_3D(R=R, save_path=analysis_path)
         MMdm    = A.dmMass_3D(R=R, save_path=analysis_path)
-        MMbh    = None       #TODO: Fix it in a new version of Analysis class
+        MMbh    = 0.0       #TODO: Fix it in a new version of Analysis class
 
         MMTotal_dist = A.stellar_mass3D_dist + A.dm_mass3D_dist # Total mass distribution
         MMtotal   = dyfunc.quantile(MMTotal_dist, 
