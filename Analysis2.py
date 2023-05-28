@@ -22,21 +22,54 @@ import pickle
 import os
 import json
 
-from plotbin.plot_velfield import plot_velfield
-from jampy.mge_radial_density import mge_radial_density
-from jampy.mge_radial_mass import mge_radial_mass
 from jampy.mge_half_light_isophote import mge_half_light_isophote
 from astropy import units as u
 
-import autolens as al
-import autolens.plot as aplt
 
 from util import quantities2D, quantities3D
-from dyLens.utils.tools import effective_einstein_radius_from_kappa, mge_radial_mass2d
+from dyLens.utils.tools import effective_einstein_radius_from_kappa
 from dyLens.utils import Analysis
-from dyLens.Combined import updt_model
-from copy import deepcopy
 
+def _plot_density(true_density, model_density,
+                lo, hi, r, reff, rmax, thetaE,
+                label_true, label_model, label_band, 
+                 fit=None, label_fit=None, 
+                 save_path=None, save_name=None):
+    
+    fig1 = plt.figure(figsize=(15,6))
+
+        #Plot Data-model
+    frame1 = fig1.add_axes((.1,.3,.8,.6))
+    plt.plot(r, true_density,  ".", label=label_true, color="black", markersize=10)
+    plt.plot(r, model_density, label=label_model, color="magenta")
+    if fit is not None:
+        plt.plot(r, fit, label=label_fit, linewidth=2, color="darkblue")
+    plt.fill_between(r, lo, hi, color="gray", alpha=0.6, label=label_band)
+    plt.axvline(reff, label="$R_{eff}$", linestyle="--", markersize=12, color="navy")
+    plt.axvline(rmax, label="Max. kin. data", linestyle="-.", markersize=12, color="navy")
+    plt.axvline(thetaE, label=r"$\theta^{ \rm true }_{ \rm E}$", linestyle=":", markersize=12, color="navy")
+
+    plt.ylabel("$\\rho \,[M_{\odot}/pc^3]$", size=20)
+    plt.loglog()
+    plt.legend(ncol=2)
+    frame1.set_xticklabels([]) #Remove x-tic labels for the first frame
+
+        #Residual plot
+    frame2   = fig1.add_axes((.1,.1,.8,.2))       
+    residual = ( true_density  - model_density ) / true_density
+    residual_lo = ( true_density  - lo ) / true_density
+    residual_hi = ( true_density  - hi ) / true_density
+    plt.plot(r, 100*residual, 'd', color='LimeGreen', mec='LimeGreen', ms=4)
+    plt.fill_between(r, 100*residual_lo, 100*residual_hi, color="gray", alpha=0.25)
+    plt.grid(axis = 'y', linestyle="--")
+
+    plt.xlabel("radii [pc]", size=20)
+    plt.ylabel("Residual (%)", size=12)
+    plt.xscale("log")
+
+    if save_path:
+        plt.savefig(save_path+"/{}.png".format(save_name))
+        plt.close()
 
 def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
             alpha=None, Re=None, phase_name=None, ncores=8):
@@ -133,11 +166,15 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     A.cornerPlot(save_path=analysis_path)
     plt.close()
     
-    if JAM:
+    if dyLens:
+        A.DynFiducial(save_path=analysis_path)
+        plt.close()
+        A.LensFiducial(save_path=analysis_path)
+        plt.close()
+    elif JAM:
         A.DynFiducial(save_path=analysis_path)
         plt.close()
     else:
-            # This works for dyLens and Lens models
         A.LensFiducial(save_path=analysis_path)
         plt.close()
        
@@ -155,24 +192,24 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                     "projMdm":   "Projected true dm mass within R, in log10.", 
                     "projMtotal":"Projected true total mass within R, in log10.", 
                     "projfdm":   "Projected fraction of DM within R.",
-                    "MMstar": "Model stellar mass within R, in log10.", 
-                    "MMdm":   "Model dm mass within R, in log10.", 
+                    "MMstar": "Model stellar mass and 68% CL within R, in log10.", 
+                    "MMdm":   "Model dm mass and 68% CL within R, in log10.", 
                     "MMbh":   "Model BH mass within R, in log10.", 
-                    "MMtotal":"Model total mass within R, in log10.", 
-                    "Mfdm":   "Model DM fraction within R.",
+                    "MMtotal":"Model total mass and 68% CL within R, in log10.", 
+                    "Mfdm":   "Model DM fraction and 68% CL within R.",
                     "MMthetaE": "Measured Einstein Ring in arcsec",
-                    "projMMstar": "Projected model stellar mass within R, in log10.", 
-                    "projMMdm":   "Projected model dm mass within R, in log10.", 
-                    "projMMtotal":"Projected model total mass within R, in log10.", 
-                    "projMfdm":   "Projected model DM fraction within R.",
-                    "Dstar":  "(MMstar - Mstar)/Mstar",
-                    "Ddm":    "(MMdm - Mdm)/Mdm",
-                    "Dtotal": "(MMtotal - Mtotal)/Mtotal",
-                    "Dfdm":   "(Mfdm - fdm)/fdm",
-                    "projDstar":  "proj (MMstar - Mstar)/Mstar",
-                    "projDdm":    "proj (MMdm - Mdm)/Mdm",
-                    "projDtotal": "proj (MMtotal - Mtotal)/Mtotal",
-                    "projDfdm":   "proj (Mfdm - fdm)/fdm",
+                    "projMMstar": "Projected model stellar mass and 68% CL within R, in log10.", 
+                    "projMMdm":   "Projected model dm mass and 68% CL within R, in log10.", 
+                    "projMMtotal":"Projected model total mass and 68% CL within R, in log10.", 
+                    "projMfdm":   "Projected model DM fraction and 68% CL within R.",
+                    "Dstar":  "(MMstar - Mstar)/Mstar with respect the median",
+                    "Ddm":    "(MMdm - Mdm)/Mdm with respect the median",
+                    "Dtotal": "(MMtotal - Mtotal)/Mtotal with respect the median",
+                    "Dfdm":   "(Mfdm - fdm)/fdm with respect the median",
+                    "projDstar":  "proj (MMstar - Mstar)/Mstar with respect the median",
+                    "projDdm":    "proj (MMdm - Mdm)/Mdm with respect the median",
+                    "projDtotal": "proj (MMtotal - Mtotal)/Mtotal with respect the median",
+                    "projDfdm":   "proj (Mfdm - fdm)/fdm with respect the median",
                     "DthetaE": "(MthetaE - MMthetaE)/MthetaE"
                 }
     json.dump(description, out_descripition, indent = 8)
@@ -188,6 +225,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                                                 Jam_Model.qobs_lum,
                                                 distance
                                                 )
+        Rmax_data = max( np.sqrt( Jam_Model.xbin**2 + Jam_Model.ybin**2 ) )
     else: 
         distance = A.phase.CombinedModel.cosmology.angular_diameter_distance(
                                             z=A.phase.CombinedModel.Lens_model.z_l).value # Distance in Mpc
@@ -197,6 +235,11 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                                                     A.phase.CombinedModel.Lens_model.qobs_lum,
                                                     distance
                                                     )
+        if dyLens:
+            Rmax_data = max( np.sqrt( A.phase.CombinedModel.Jampy_model.xbin**2 + 
+                                      A.phase.CombinedModel.Jampy_model.ybin**2 ) )
+        else:
+            Rmax_data = None
     
         # True Einstein ring 
     if dyLens or Lens:
@@ -224,12 +267,13 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
         MMdm    = A.dmMass_3D(R=R, save_path=analysis_path)
         MMbh    = 0.0       #TODO: Fix it in a new version of Analysis class
 
-        MMTotal_dist = A.stellar_mass3D_dist + A.dm_mass3D_dist # Total mass distribution
+        MMTotal_dist = np.asarray( A.stellar_mass3D_dist) + \
+                        np.asarray( A.dm_mass3D_dist)            # Total mass distribution
         MMtotal   = dyfunc.quantile(MMTotal_dist, 
                                     q=[0.16, 0.5, 0.84],
                                     weights=A.weights)
         
-        Mfdm_dist  = A.dm_mass3D_dist / MMTotal_dist             # DM fraction distribution
+        Mfdm_dist  = np.asarray(A.dm_mass3D_dist) / MMTotal_dist # DM fraction distribution
         Mfdm       = dyfunc.quantile(Mfdm_dist, 
                                     q=[0.16, 0.5, 0.84],
                                     weights=A.weights)
@@ -237,12 +281,13 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
         projMMstar  = A.stellarMass_2D(R=R, save_path=analysis_path)
         projMMdm    = A.dmMass_2D(R=R, save_path=analysis_path)
 
-        projMtotal_dist = A.stellar_mass2D_dist + A.dm_mass2D_dist # Total proj mass distribution
+        projMtotal_dist = np.asarray( A.stellar_mass2D_dist ) + \
+                            np.asarray( A.dm_mass2D_dist )       # Total proj mass distribution
         projMMtotal =  dyfunc.quantile(projMtotal_dist, 
                                     q=[0.16, 0.5, 0.84],
                                     weights=A.weights)
         
-        projMfdm_dist = A.dm_mass2D_dist / projMtotal_dist         # proj DM fraction distribution
+        projMfdm_dist = np.asarray(A.dm_mass2D_dist) / projMtotal_dist # proj DM fraction distribution
         projMfdm      = dyfunc.quantile(projMfdm_dist, 
                                     q=[0.16, 0.5, 0.84],
                                     weights=A.weights)
@@ -251,17 +296,17 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
             # 3D Quantities
         MMstar = MMdm = MMbh = MMtotal = Mfdm = 0.0  # Lens only is not sensitive to them.
 
-
             # 2D Quantities
         projMMstar  = A.stellarMass_2D(R=R, save_path=analysis_path)
         projMMdm    = A.dmMass_2D(R=R, save_path=analysis_path)
 
-        projMtotal_dist = A.stellar_mass2D_dist + A.dm_mass2D_dist # Total proj mass distribution
+        projMtotal_dist = np.asarray( A.stellar_mass2D_dist ) + \
+                            np.asarray( A.dm_mass2D_dist )       # Total proj mass distribution
         projMMtotal =  dyfunc.quantile(projMtotal_dist, 
                                     q=[0.16, 0.5, 0.84],
                                     weights=A.weights)
         
-        projMfdm_dist = A.dm_mass2D_dist / projMtotal_dist         # proj DM fraction distribution
+        projMfdm_dist = np.asarray(A.dm_mass2D_dist) / projMtotal_dist # proj DM fraction distribution
         projMfdm      = dyfunc.quantile(projMfdm_dist, 
                                     q=[0.16, 0.5, 0.84],
                                     weights=A.weights)
@@ -269,7 +314,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
         # Measured Einstein Ring
     if JAM:
             # JAM cannot constraint it
-        Re_model = Re_data = DthetaE = 0
+        Re_model = DthetaE = 0
     else:
             # kappa MGE model. Uses the same grid as the lens image
         kappa_model = A.phase.CombinedModel.Lens_model.convergence_2d_from(
@@ -282,12 +327,12 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                             grid_spacing=A.phase.CombinedModel.Fit.image.pixel_scale,
                             grid=A.phase.CombinedModel.Fit.imaging.unmasked.grid, 
                             Nsamples=A.phase.CombinedModel.Fit.imaging.unmasked.grid.shape[0]/2)
-    print("\n")
-    print("Model Einstein ring: {:.2e} Msun".format( float(Re_model) ))
-    print("Data  Einstein ring: {:.2e} Msun".format( float(Re_data) ))
-    DthetaE = float ( (Re_data - Re_model)/Re_data )
-    print("(Model - Data)/Data: {:.2f}".format( float(DthetaE) ))
-    print('=' * term_size.columns)
+        print("\n")
+        print("Model Einstein ring: {:.2e} Msun".format( float(Re_model) ))
+        print("Data  Einstein ring: {:.2e} Msun".format( float(Re_data) ))
+        DthetaE = float ( (Re_data - Re_model)/Re_data )
+        print("(Model - Data)/Data: {:.2f}".format( float(DthetaE) ))
+        print('=' * term_size.columns)
         
 
         # Data quantities
@@ -297,13 +342,15 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     dm_dataset   = np.load(data_path+"/dm/coordinates_dark.npy")
     star_dataset = np.load(data_path+"/imgs/coordinates_star.npy")
         
-    Mstar, Mdm, Mbh, Mtotal, fdm = quantities3D(star_dataset=star_dataset,
-                                                    dm_dataset=dm_dataset, 
-                                                    info=info, R_kpc=R_kpc)                # 3D quantities
+    Mstar, Mdm, Mbh, Mtotal, fdm = quantities3D(
+                                            star_dataset=star_dataset,
+                                            dm_dataset=dm_dataset, 
+                                            info=info, R_kpc=R_kpc)             # 3D quantities
 
-    projMstar, projMdm, Mbh, projMtotal, projfdm = quantities2D(star_dataset=star_dataset,
-                                                                    dm_dataset=dm_dataset, 
-                                                                    info=info, R_kpc=R_kpc) # 2D quantities
+    projMstar, projMdm, Mbh, projMtotal, projfdm = quantities2D(
+                                                        star_dataset=star_dataset,
+                                                        dm_dataset=dm_dataset, 
+                                                        info=info, R_kpc=R_kpc) # 2D quantities
 
     print("3D results")
     print('=' * term_size.columns)
@@ -359,15 +406,43 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
 
         # 3D density profiles
     if JAM or dyLens:
-        
-        a = 0.2
-        b = 10*reff
-        radii  = np.arange(a, b, 0.01)  # Radii in arcsec
+        analysis_densities = analysis_path+"/densities/"
+        os.makedirs(analysis_densities)
         pc       = distance*np.pi/0.648  # Constant factor to convert arcsec --> pc
-        radii_pc = radii*pc              # Radii in pc
         reff_pc  = reff*pc
-        dstar  = A.stellarMass3D_density(Rmin=a, Rmax=b, save_path=analysis_path)
-        ddm    = A.dmMass3D_density(Rmin=a, Rmax=b,  save_path=analysis_path)
+        Re_data_pc   = Re_data*pc
+        Rmax_data_pc = Rmax_data*pc
+        
+            # Load DM density profile
+        dm_hdu = fits.open(data_path+"/dm/density_fit.fits")
+        rho_dm = dm_hdu[1].data["density"]
+        r_dm   = dm_hdu[1].data["radius"]
+        dm_fit = dm_hdu[1].data["bestfit"]
+        
+        i = r_dm < 2*Rmax_data_pc  # Two times the max kin data
+        rho_dm = rho_dm[i]
+        r_dm   = r_dm[i]
+        dm_fit = dm_fit[i]
+
+            # Load star density profile
+        star_hdu = fits.open(data_path+"/imgs/stellar_density.fits")
+        rho_star = star_hdu[1].data["density"]
+        r_star   = star_hdu[1].data["radius"]
+
+        i = r_star < 2*Rmax_data_pc  # Two times the max kin data
+        rho_star = rho_star[i]
+        r_star   = r_star[i]
+            
+            # This assumes that dm and stellar profiles were
+            # evaluated at same points
+        radii = r_star/pc     # radii where to compute the models, in arsec
+
+        dstar  = np.asarray( A.stellarMass3D_density(radii=radii, 
+                                                     save_path=analysis_densities)
+                        )
+        ddm    = np.asarray( A.dmMass3D_density(radii=radii,
+                                                save_path=analysis_densities)
+                        )
         dtotal = dstar + ddm
             # median and 1sigma band
         mean_star = mquantiles(dstar, 0.5, axis=0)[0]
@@ -382,75 +457,31 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
         lo_total   = mquantiles(dtotal, 0.16, axis=0)[0]
         hi_total   = mquantiles(dtotal, 0.84, axis=0)[0]
         
-        
-            # Load DM density profile
-        dm_hdu = fits.open(data_path+"/dm/density_fit.fits")
-        rho_dm = dm_hdu[1].data["density"]
-        r_dm   = dm_hdu[1].data["radius"]
-        dm_fit = dm_hdu[1].data["bestfit"]
-        
-        i = r_dm < radii_pc.max()  # Only in the same range
-        rho_dm = rho_dm[i]
-        r_dm   = r_dm[i]
-        dm_fit = dm_fit[i]
-
-            # Load star density profile
-        star_hdu = fits.open(data_path+"/imgs/stellar_density.fits")
-        rho_star = star_hdu[1].data["density"]
-        r_star   = star_hdu[1].data["radius"]
-
-        i = r_star < radii_pc.max() # Only in the same range
-        rho_star = rho_star[i]
-        r_star   = r_star[i]
-
             # Plot stellar
-        plt.figure(figsize=(15,6))
-        plt.plot(radii_pc, np.log10(mean_star), label="Model", color="magenta")
-        plt.plot(r_star, np.log10(rho_star),  ".", label="Stellar data", 
-                                color="black", markersize=12)
-        plt.fill_between(radii_pc, np.log10(lo_star), np.log10(hi_star), 
-                                color="gray", alpha=0.2, label="$1\sigma$")
-        plt.xlabel("radii [pc]", size=20)
-        plt.ylabel("$\log_{10}(\\frac{\\rho}{M_\odot/pc^3})$", size=20)
-        plt.axvline(reff_pc, label="$R_{eff}$", linestyle="--", markersize=12)
-        plt.legend()
-        plt.xscale("log")
-        plt.tight_layout()
-        plt.savefig(analysis_path+"/stellar_density_profiles.png")
-        plt.close()
+        _plot_density(rho_star, mean_star, 
+                lo_star, hi_star, r_star, reff_pc, Rmax_data_pc, Re_data_pc,
+                label_true=r"Stellar$_{\rm true}$",
+                label_model=r"Stellar$_{\rm model}$",
+                label_band="$1\sigma$",
+                save_path=analysis_densities, save_name="stellar_density")
 
             # Plot dm
-        plt.figure(figsize=(15,6))
-        plt.plot(radii_pc, np.log10(mean_dm), label="Model", color="magenta")
-        plt.plot(r_dm, np.log10(dm_fit), label="DM Fit", color="blue", markersize=12)
-        plt.plot(r_dm, np.log10(rho_dm),  ".", label="DM data", 
-                                color="black", markersize=12)
-        plt.fill_between(radii_pc, np.log10(lo_dm), np.log10(hi_dm), 
-                                color="gray", alpha=0.2, label="$1\sigma$")
-        plt.xlabel("radii [pc]", size=20)
-        plt.ylabel("$\log_{10}(\\frac{\\rho}{M_\odot/pc^3})$", size=20)
-        plt.axvline(reff_pc, label="$R_{eff}$", linestyle="--", markersize=12)
-        plt.legend()
-        plt.xscale("log")
-        plt.tight_layout()
-        plt.savefig(analysis_path+"/dm_density_profiles.png")
-        plt.close()
+        _plot_density(rho_dm, mean_dm, 
+                lo_dm, hi_dm, r_dm, reff_pc, Rmax_data_pc, Re_data_pc,
+                label_true=r"DM$_{\rm true}$",
+                label_model=r"DM$_{\rm model}$",
+                label_band="$1\sigma$",
+                fit=dm_fit, label_fit=r"DM$_{\rm Fit}$",
+                save_path=analysis_densities, save_name="dm_density")
 
             # Plots total
-        plt.figure(figsize=(15,6))
-        plt.plot(radii_pc, np.log10(mean_total), label="Model Total", color="magenta")
-        plt.plot(r_star, np.log10(rho_star + rho_dm),  ".", label="Total data", 
-                                color="black", markersize=12)
-        plt.fill_between(radii_pc, np.log10(lo_total), np.log10(hi_total), 
-                                color="gray", alpha=0.2, label="$1\sigma$")
-        plt.xlabel("radii [pc]", size=20)
-        plt.ylabel("$\log_{10}(\\frac{\\rho}{M_\odot/pc^3})$", size=20)
-        plt.axvline(reff_pc, label="$R_{eff}$", linestyle="--", markersize=12)
-        plt.legend()
-        plt.xscale("log")
-        plt.tight_layout()
-        plt.savefig(analysis_path+"/total_density_profiles.png")
-        plt.close()
+        _plot_density(rho_star + rho_dm, mean_total, 
+                lo_total, hi_total, r_dm, reff_pc, Rmax_data_pc, Re_data_pc,
+                label_true=r"Total$_{\rm true}$",
+                label_model=r"Total$_{\rm model}$",
+                label_band="$1\sigma$",
+                save_path=analysis_densities, save_name="total_density")
+
     else: pass
 
     # Save quantities
@@ -463,18 +494,18 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     r["Mbh"]    = Mbh
     r["Mtotal"] = float( np.log10(Mtotal) )
     r["fdm"]    = fdm
-    r["projMstar"]  = float( np.log10(projMstar) )
-    r["projMdm"]    = float( np.log10(projMdm)   )
+    r["projMstar"]  = float( np.log10(projMstar)  )
+    r["projMdm"]    = float( np.log10(projMdm)    )
     r["projMtotal"] = float( np.log10(projMtotal) )
     r["projfdm"]    = projfdm
-    r["MMstar"]  = list( np.log10(MMstar) )
-    r["MMdm"]    = list( np.log10(MMdm)   )
-    r["MMbh"]    = list( np.log10(MMbh)   )
+    r["MMstar"]  = list( np.log10(MMstar)  )
+    r["MMdm"]    = list( np.log10(MMdm)    )
+    r["MMbh"]    = float( np.log10(MMbh)   )
     r["MMtotal"] = list( np.log10(MMtotal) )
     r["Mfdm"]    = list( Mfdm )
     r["MMthetaE"]= float (Re_model)
-    r["projMMstar"]  = list( np.log10(projMMstar) )
-    r["projMMdm"]    = list( np.log10(projMMdm)   )
+    r["projMMstar"]  = list( np.log10(projMMstar)  )
+    r["projMMdm"]    = list( np.log10(projMMdm)    )
     r["projMMtotal"] = list( np.log10(projMMtotal) )
     r["projMfdm"]    = list( projMfdm )
     r["Dstar"]   = Dstar
