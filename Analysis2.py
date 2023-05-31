@@ -47,7 +47,10 @@ def _plot_density(true_density, model_density,
     plt.fill_between(r, lo, hi, color="gray", alpha=0.6, label=label_band)
     plt.axvline(reff, label="$R_{eff}$", linestyle="--", markersize=12, color="navy")
     plt.axvline(rmax, label="Max. kin. data", linestyle="-.", markersize=12, color="navy")
-    plt.axvline(thetaE, label=r"$\theta^{ \rm true }_{ \rm E}$", linestyle=":", markersize=12, color="navy")
+    if thetaE == 0:
+        pass
+    else:
+        plt.axvline(thetaE, label=r"$\theta^{ \rm true }_{ \rm E}$", linestyle=":", markersize=12, color="navy")
 
     plt.ylabel("$\\rho \,[M_{\odot}/pc^3]$", size=20)
     plt.loglog()
@@ -314,7 +317,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
         # Measured Einstein Ring
     if JAM:
             # JAM cannot constraint it
-        Re_model = DthetaE = 0
+        Re_model = DthetaE = Re_data =0
     else:
             # kappa MGE model. Uses the same grid as the lens image
         kappa_model = A.phase.CombinedModel.Lens_model.convergence_2d_from(
