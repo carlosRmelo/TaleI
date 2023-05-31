@@ -1,0 +1,21 @@
+Model phase2
+
+z_l 0.1972841823760099
+z_s      0.517
+
+         Lens Galaxy
+inc                        Fixed(74.873002062348)
+beta                       Fixed(0.036344073089153245)
+ml                         Fixed(2.7873281880621827)
+log_rho_s                  Fixed(-3.4064931260402513)
+rs                         Fixed(14.321538929509094)
+qDM                        Fixed(1.0)
+slope                      Fixed(1.65443558576003)
+mag_shear                  Fixed(0.030079616116187133)
+phi_shear                  Fixed(113.43260057971635)
+gamma                      Fixed(1.0)
+
+       Source Galaxy
+shape0                   Uniform(20, 80)
+shape1                   Uniform(20, 80)
+coefficient           LogUniform(1e-06, 1000000.0)
