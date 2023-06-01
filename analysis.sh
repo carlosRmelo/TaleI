@@ -64,7 +64,6 @@ python Analysis2.py ./485608/model1/no_shear/dyLens/	/home/carlosmelo/Documents/
 python Analysis2.py ./545285/model1/no_shear/dyLens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo545285/	--Re	--dyLens	--phase=phase5
 
 	## Lens no shear analysis within Re
-python Analysis2.py ./7/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo7/ 	--Re 	--Lens 	--phase=phase5
 python Analysis2.py ./8/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo8/	--Re	--Lens	--phase=phase5
 python Analysis2.py ./9/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo9/	--Re	--Lens	--phase=phase5
 python Analysis2.py ./20/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo20/	--Re	--Lens	--phase=phase5
@@ -85,7 +84,6 @@ python Analysis2.py ./485608/model1/no_shear/Lens/	/home/carlosmelo/Documents/Gi
 python Analysis2.py ./545285/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo545285/	--Re	--Lens	--phase=phase5
 
 	## Lens no shear analysis within 2.5Reff
-python Analysis2.py ./7/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo7/	--alpha=2.5	--Lens	--phase=phase5
 python Analysis2.py ./8/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo8/	--alpha=2.5	--Lens	--phase=phase5
 python Analysis2.py ./9/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo9/	--alpha=2.5	--Lens	--phase=phase5
 python Analysis2.py ./20/model1/no_shear/Lens/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo20/	--alpha=2.5	--Lens	--phase=phase5
