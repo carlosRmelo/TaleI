@@ -297,7 +297,7 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
 
     else:
             # 3D Quantities
-        MMstar = MMdm = MMbh = MMtotal = Mfdm = 0.0  # Lens only is not sensitive to them.
+        MMstar = MMdm = MMbh = MMtotal = Mfdm = [0.0, 0.0, 0.0]  # Lens only is not sensitive to them.
 
             # 2D Quantities
         projMMstar  = A.stellarMass_2D(R=R, save_path=analysis_path)
