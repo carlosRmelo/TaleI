@@ -1,5 +1,4 @@
 		## JAM analysis within 2.5Reff
-python Analysis2.py ./7/model1/JAM/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo7/	--alpha=2.5	--JAM
 python Analysis2.py ./8/model1/JAM/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo8/	--alpha=2.5	--JAM
 python Analysis2.py ./9/model1/JAM/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo9/	--alpha=2.5	--JAM
 python Analysis2.py ./11/model1/JAM/	/home/carlosmelo/Documents/GitHub/Illustris/my_illustris/TNG50-1-snap84-subhalo11/	--alpha=2.5	--JAM
