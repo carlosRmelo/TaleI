@@ -1,0 +1,21 @@
+Model phase3
+
+z_l 0.1972841823760099
+z_s     0.3526
+
+         Lens Galaxy
+inc                      Uniform(75.34986354494055, 90.0)
+beta                     Uniform(0.15541626889287927, 0.3348109948512008)
+ml                       Uniform(1.8886036213454644, 2.8329054320181966)
+log_rho_s                Uniform(-2.910619104044131, -1.9404127360294208)
+rs                       Uniform(7.227587177058799, 13.186341284062431)
+qDM                        Fixed(1.0)
+slope                    Uniform(0.8952212195215031, 1.3428318292822548)
+mag_shear                Uniform(0.027032094808653494, 0.04054814221298024)
+phi_shear                Uniform(202.20183522149904, 270.0)
+gamma                      Fixed(1.0)
+
+       Source Galaxy
+shape0                     Fixed(30.52889328071661)
+shape1                     Fixed(20.533868517578473)
+coefficient                Fixed(3.5403998648793578)
