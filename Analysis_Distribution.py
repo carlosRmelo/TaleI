@@ -331,8 +331,8 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
                             grid=A.phase.CombinedModel.Fit.imaging.unmasked.grid, 
                             Nsamples=A.phase.CombinedModel.Fit.imaging.unmasked.grid.shape[0]/2)
         print("\n")
-        print("Model Einstein ring: {:.2e} Msun".format( float(Re_model) ))
-        print("Data  Einstein ring: {:.2e} Msun".format( float(Re_data) ))
+        print("Model Einstein ring: {:.2e}".format( float(Re_model) ))
+        print("Data  Einstein ring: {:.2e}".format( float(Re_data) ))
         DthetaE = float ( (Re_data - Re_model)/Re_data )
         print("(Model - Data)/Data: {:.2f}".format( float(DthetaE) ))
         print('=' * term_size.columns)
