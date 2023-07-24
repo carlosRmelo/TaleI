@@ -1,0 +1,24 @@
+Model phase5
+
+z_l 0.1972841823760099
+z_s     0.7953
+
+         Lens Galaxy
+inc                      Uniform(78.3352252592033, 90.0)
+beta                     Uniform(0.1875742452602635, 0.2813613678903953)
+ml                       Uniform(2.5625270814351766, 3.367920740726288)
+log_rho_s                Uniform(-3.8877041426554597, -3.2204640274900145)
+rs                       Uniform(15.801675230744223, 23.702512846116335)
+qDM                        Fixed(1.0)
+slope                    Uniform(1.395297360139234, 1.731650224522693)
+mag_shear                Uniform(0.005151873796226124, 0.006588493676596661)
+phi_shear                Uniform(193.93754458534775, 242.70645166930126)
+gamma                      Fixed(1.0)
+
+       Source Galaxy
+pixels                     Fixed(182.54958620273894)
+weight_floor               Fixed(0.0023828304041221683)
+weight_power               Fixed(4.550687239918409)
+inner_coefficient            Fixed(5.636533689283449e-05)
+outer_coefficient            Fixed(23.64433128232364)
+signal_scale               Fixed(0.030939842919687537)
