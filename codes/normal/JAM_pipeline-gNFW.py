@@ -115,7 +115,7 @@ def run(data_path, ncores):
 
     #Config non-linear search
     Jam_Model.config_non_linear(nlive=500, n_cores=ncores,)
-    output_path = data_path.split("/")[1]+"/model2/normal/shear/JAM/"
+    output_path = data_path.split("/")[1]+"/model2/normal/shear/"
 
     Jam_Model.run_dynesty(maxiter=300, output_path=output_path)
 
