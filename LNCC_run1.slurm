@@ -49,9 +49,28 @@ export OMP_NUM_THREADS=$omp_threads
 echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 echo -e "\n## Random walk. \n"
 
-	## Lens Model
-python shear_pipeline.py ./313415/data --ncores=48
-python shear_pipeline.py ./20/data --ncores=48
-python shear_pipeline.py ./100675/data --ncores=48
-python shear_pipeline.py ./11/data --ncores=48
-python shear_pipeline.py ./116278/data --ncores=48
+	## JAM Model
+python JAM_pipeline-gNFW.py ./7/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./8/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./9/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./11/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./20/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./56405/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./56406/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./83991/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./83996/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./84010/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./100675/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./116278/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./172209/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./313415/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./341482/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./344595/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./396742/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./414107/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./451938/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./485608/data/normal	--ncores=48
+python JAM_pipeline-gNFW.py ./545285/data/normal	--ncores=48
+
+
+

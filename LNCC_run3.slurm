@@ -49,8 +49,14 @@ export OMP_NUM_THREADS=$omp_threads
 echo -e "\n## Numero de tarefas para este job: $SLURM_NTASKS \n"
 echo -e "\n## Random walk. \n"
 
-	## Lens Model
-python shear_pipeline.py ./545285/data --ncores=48
-python shear_pipeline.py ./56405/data --ncores=48
-python shear_pipeline.py ./56406/data --ncores=48
-python shear_pipeline.py ./7/data --ncores=48
+	## dyLens Model
+	
+python full_pipeline-gNFW_no_shear.py ./172209/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./313415/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./341482/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./344595/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./396742/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./414107/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./451938/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./485608/data/normal	--ncores=48
+python full_pipeline-gNFW_no_shear.py ./545285/data/normal	--ncores=48
