@@ -47,7 +47,7 @@ def run(data_path, ncores):
     log = fits.open('{}/log_img.fits'.format(data_path))[1].data
 
         #IFU data
-    hdulist = fits.open('%s/IFU.fits'%data_path)[1]
+    hdulist = fits.open('%s/IFU15.fits'%data_path)[1]
     tem = hdulist.data
     x0 = tem['xbin']
     y0 = tem['ybin']
@@ -114,10 +114,10 @@ def run(data_path, ncores):
     Jam_Model.build_model(parsDic)
 
     #Config non-linear search
-    Jam_Model.config_non_linear(nlive=25, n_cores=ncores,)
-    output_path = data_path.split("/")[1]+"/test"
+    Jam_Model.config_non_linear(nlive=500, n_cores=ncores,)
+    output_path = data_path.split("/")[1]+"/model2/normal/shear/JAM/"
 
-    Jam_Model.run_dynesty(maxiter=20, output_path=output_path)
+    Jam_Model.run_dynesty(maxiter=300, output_path=output_path)
 
 
 if __name__ == '__main__':
