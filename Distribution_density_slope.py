@@ -114,7 +114,7 @@ def run(result_path):
 
     theta0 = [-2, 5]   # Initial guess. [slope, normalisation]
     r1 = r_total.min()
-    r2 = 2 * reff
+    r2 = 1.5 * reff
     rho, r = restrict_density(density=rho_total, r=r_total, r1=r1, r2=r2)         # Get density within r1 and r2
 
     fit_total = least_squares(fit_funtion, theta0, args=(np.log(rho), np.log(r))) # Fit
@@ -124,7 +124,7 @@ def run(result_path):
     quantities["AV_slope1"] = AV_slope1
 
     theta0 = [-2, 5]   # Initial guess. [slope, normalisation]
-    r1 = 2 * reff
+    r1 = 1.5 * reff
     r2 = 2.5 * reff
     rho, r = restrict_density(density=rho_total, r=r_total, r1=r1, r2=r2)         # Get density within r1 and r2
 
