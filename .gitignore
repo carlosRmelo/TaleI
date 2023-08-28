@@ -266,3 +266,11 @@
 8/model_n/bigger/no_shear/phase5/prior_transform_phase5.pickle
 8/model_n/bigger/no_shear/phase5/phase5.pickle
 83991/model2/normal/no_shear/dyLens/phase1.tar.xz
+83991/model_n/no_shear/dyLens/phase1.tar.xz
+83991/model_n/no_shear/dyLens/phase3.tar.xz
+83991/model_n/no_shear/dyLens/phase4.tar.xz
+83991/model_n/no_shear/dyLens/phase5/CombinedModel_phase5.pickle
+83991/model_n/no_shear/dyLens/phase5/instance_for_phase5.pickle
+83991/model_n/no_shear/dyLens/phase5/log_likelihood_phase5.pickle
+83991/model_n/no_shear/dyLens/phase5/prior_transform_phase5.pickle
+83991/model_n/no_shear/dyLens/phase5/phase5.pickle
