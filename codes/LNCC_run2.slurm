@@ -52,11 +52,11 @@ echo -e "\n## Random walk. \n"
 	## dyLens Model
 
 
-python full_pipeline-gNFW_no_shear.py ./83991/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./83996/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./84010/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./100675/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./116278/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./172209/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./313415/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./83991/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./83996/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./84010/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./100675/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./116278/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./172209/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./313415/data/normal	--ncores=48
 

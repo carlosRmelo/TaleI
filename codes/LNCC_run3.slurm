@@ -53,10 +53,10 @@ echo -e "\n## Random walk. \n"
 	
 
 
-python full_pipeline-gNFW_no_shear.py ./341482/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./344595/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./396742/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./414107/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./451938/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./485608/data/normal	--ncores=48
-python full_pipeline-gNFW_no_shear.py ./545285/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./341482/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./344595/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./396742/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./414107/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./451938/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./485608/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./545285/data/normal	--ncores=48
