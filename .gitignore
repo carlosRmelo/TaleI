@@ -262,3 +262,6 @@
 8/model_n/bigger/no_shear/phase5/CombinedModel_phase5.pickle
 8/model_n/bigger/no_shear/phase4.tar.xz
 8/model_n/bigger/no_shear/phase5/instance_for_phase5.pickle
+8/model_n/bigger/no_shear/phase5/log_likelihood_phase5.pickle
+8/model_n/bigger/no_shear/phase5/prior_transform_phase5.pickle
+8/model_n/bigger/no_shear/phase5/phase5.pickle
