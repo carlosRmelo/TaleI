@@ -33,5 +33,6 @@
         "PL_slope1": "PL slope within Rmin-1.5Reff",
         "PL_slope2": "PL slope within 1.5Reff-2.5Reff",
         "AV_slope1": "average slope within Rmin-1.5Reff",
-        "AV_slope2": "average slope within 1.5Reff-2.5Reff"
+        "AV_slope2": "average slope within 1.5Reff-2.5Reff",
+        "Ddensity": "Mean error of the density profile"
 }
