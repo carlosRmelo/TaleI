@@ -1,47 +1,47 @@
 	# JAM slopes
-# python Fiducial_density_slope.py ./7/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./8/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./9/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./11/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./20/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./56405/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./56406/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./83991/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./83996/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./84010/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./100675/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./116278/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./172209/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./313415/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./341482/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./344595/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./396742/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./414107/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./451938/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./485608/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
-# python Fiducial_density_slope.py ./545285/model2/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./7/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./8/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./9/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./11/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./20/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./56405/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./56406/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./83991/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./83996/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./84010/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./100675/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./116278/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./172209/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./313415/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./341482/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./344595/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./396742/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./414107/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./451938/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./485608/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
+# python Fiducial_density_slope.py ./545285/model1/normal/JAM/Fiducial/Analysis_2.5Reff/
 
 # dyLens slopes
-python Fiducial_density_slope.py ./7//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./8//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./9//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./11//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./20//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./56405//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./56406//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./83991//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./83996//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./84010//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./100675//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./116278//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./172209//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./313415//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./341482//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./344595//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./396742//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./414107//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./451938//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./485608//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
-python Fiducial_density_slope.py ./545285//model2/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./7//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./8//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./9//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./11//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./20//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./56405//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./56406//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./83991//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./83996//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./84010//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./100675//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./116278//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./172209//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./313415//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./341482//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./344595//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./396742//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./414107//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./451938//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./485608//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
+python Fiducial_density_slope.py ./545285//model1/normal/shear/dyLens/phase5/Fiducial/Analysis_2.5Reff/
 
 
