@@ -30,8 +30,8 @@
         "projDtotal": "proj (MMtotal - Mtotal)/Mtotal with respect the median",
         "projDfdm": "proj (Mfdm - fdm)/fdm with respect the median",
         "DthetaE": "(MthetaE - MMthetaE)/MthetaE",
-        "PL_slope1": "PL slope within Rmin-2Reff",
-        "PL_slope2": "PL slope within 2Reff-2.5Reff",
-        "AV_slope1": "average slope within Rmin-2Reff",
-        "AV_slope2": "average slope within 2Reff-2.5Reff"
+        "PL_slope1": "PL slope within Rmin-1.5Reff",
+        "PL_slope2": "PL slope within 1.5Reff-2.5Reff",
+        "AV_slope1": "average slope within Rmin-1.5Reff",
+        "AV_slope2": "average slope within 1.5Reff-2.5Reff"
 }
