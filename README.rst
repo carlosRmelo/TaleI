@@ -2,7 +2,7 @@ TaleI
 ========
 This repo is intended to present and make the first-part results of my Ph.D. publicly available.
 The subject is how to combine, self-consistently, stellar dynamics and galaxy-galaxy strong gravitational lensing.
-The associated paper is on the way. Until then, check out our previous work regarding probes of General Relativity using combined modelling of stellar dynamics and strong gravitational lensing,  [Melo-Carneiro et al. (2023)](<https://ui.adsabs.harvard.edu/abs/2023MNRAS.520.1613M/abstract>). [Emsellem, Monnet & Bacon (1994)](https://ui.adsabs.harvard.edu/#abs/1994A&A...285..723E/)
+The associated paper is on the way. Until then, check out our previous work regarding probes of General Relativity using combined modelling of stellar dynamics and strong gravitational lensing, `Melo-Carneiro et al. (2023) <https://ui.adsabs.harvard.edu/abs/2023MNRAS.520.1613M/abstract>`_.
 
 
 
