@@ -12,6 +12,7 @@ Each folder represents one of the mock galaxies based on the TNG50 subhalos. The
 
 - ``data``: The mock (lensing and kinematics) data.
 - ``model``: The results related to a specific model used to fit the data.
+
 	* normal: means that a small FoV was used to generate the lensing data;
 	* bigger: means that a bigger FoV was used to generate the lensing data;
 	* shear: means that an external shear was added to the lensing model;
