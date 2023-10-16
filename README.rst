@@ -13,10 +13,10 @@ Each folder represents one of the mock galaxies based on the TNG50 subhalos. The
 - ``data``: The mock (lensing and kinematics) data.
 - ``model``: The results related to a specific model used to fit the data.
 	* normal: means that a small FoV was used to generate the lensing data;
-	* bigger: means that a bigger FoV was used to generate the lensign data;
+	* bigger: means that a bigger FoV was used to generate the lensing data;
 	* shear: means that an external shear was added to the lensing model;
 	* no_shear: means that no external shear was added to the lensing model;
-- ``phase``: Result of a specific phase of the Pipeline. Final results are based of phase5.
+- ``phase``: Result of a specific phase of the Pipeline. Final results are based on phase5.
 - ``JAM``: Dynamical-only model results.
 - ``Lens``: Lens-only modelling.
 - ``dyLens``: Combined (lens+dynamics) modeling.
