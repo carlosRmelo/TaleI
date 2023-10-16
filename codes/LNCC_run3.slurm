@@ -51,8 +51,8 @@ echo -e "\n## Random walk. \n"
 
 	## dyLens Model
 	
-
-
+python full_pipeline-gNFW_shear.py ./172209/data/normal	--ncores=48
+python full_pipeline-gNFW_shear.py ./313415/data/normal	--ncores=48
 python full_pipeline-gNFW_shear.py ./341482/data/normal	--ncores=48
 python full_pipeline-gNFW_shear.py ./344595/data/normal	--ncores=48
 python full_pipeline-gNFW_shear.py ./396742/data/normal	--ncores=48

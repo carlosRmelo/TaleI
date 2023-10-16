@@ -1,8 +1,12 @@
-'''
+"""
+Original Author: Xiaohan Wu <https://xiaohanzai.github.io/>
+Last Mofidication by: Carlos Melo <carlos.melo@ufrgs.br>
+Date of last modification: 17/05/2023
+
+
 Some useful utilities.
-Original by  Xiaohan Wu. 
-Modified by Carlos Melo
-'''
+"""
+
 import numpy as np
 from astropy import units as u
 from astropy import constants as const
