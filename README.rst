@@ -22,6 +22,7 @@ Each folder represents one of the mock galaxies based on the TNG50 subhalos. The
 - ``Lens``: Lens-only modelling.
 - ``dyLens``: Combined (lens+dynamics) modeling.
 - ``Analysis``: Final analysis containing the measurements of interest within a given radius. 
+
 	* Fiducial: Analysis was performed using the fiducial method, i.e., the median of the one-dimensional posterior distribution of the parameters. 
 - ``codes``: Codes used to run the pipelines, as well as codes to control the job submission on the LNCC supercomputer.
 - ``config``: Contains configuration files which customize default **PyAutoLens**.
