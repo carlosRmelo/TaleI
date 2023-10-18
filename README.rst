@@ -19,8 +19,8 @@ Each folder represents one of the mock galaxies based on the TNG50 subhalos. The
 	* no_shear: means that no external shear was added to the lensing model;
 - ``phase``: Result of a specific phase of the Pipeline. Final results are based on phase5.
 - ``JAM``: Dynamical-only model results.
-- ``Lens``: Lens-only modelling.
-- ``dyLens``: Combined (lens+dynamics) modeling.
+- ``Lens``: Lens-only  model results.
+- ``dyLens``: Combined (lens+dynamics)  model results.
 - ``Analysis``: Final analysis containing the measurements of interest within a given radius. 
 
 	* Fiducial: Analysis was performed using the fiducial method, i.e., the median of the one-dimensional posterior distribution of the parameters. 
