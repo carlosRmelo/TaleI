@@ -5,7 +5,7 @@
 
 import sys
 from optparse import OptionParser
-
+import shutil
 from dynesty import plotting as dyplot
 from dynesty import utils as dyfunc
 
@@ -76,7 +76,9 @@ def _plot_density(true_density, model_density,
 
 def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
             alpha=None, Re=None, phase_name=None, ncores=8):
-    
+
+    term_size = shutil.get_terminal_size(fallback=(120, 50))
+
     if JAM == dyLens == Lens == None:
         raise ValueError("You must provide at least one of the keywords related to the analysis: JAM, Lens or Lens")
     else:
@@ -158,8 +160,6 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
             # An object to analyse the results
         A = Analysis.Analysis(sampler=sampler, 
                                 Lens_phase=phase, ncores=ncores)
-
-    
 
         # Tracer plot
     A.tracerPlot(save_path=analysis_path)
@@ -527,7 +527,6 @@ def run(result_path, data_path, JAM=None, dyLens=None, Lens=None,
     out_r.close()
 
 if __name__ == '__main__':
-    term_size = os.get_terminal_size()
     parser = OptionParser() #You also should inform the folder name
     parser.add_option('--alpha', action='store', type=float, dest='alpha',
                       default=None, 
