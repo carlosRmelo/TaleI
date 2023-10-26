@@ -1,0 +1,12 @@
+Model
+
+z_l 0.1972841823760099
+              Galaxy
+inc                      Uniform(78.3352252592033, 90.0)
+beta                     Uniform(-0.5, 0.5)
+ml                       Uniform(1.0, 10)
+log_rho_s                Uniform(-6, 0)
+rs                         Fixed(9.84278125285137)
+qDM                        Fixed(1.0)
+slope                    Uniform(0.5, 2.0)
+
