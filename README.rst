@@ -26,7 +26,38 @@ Each folder represents one of the mock galaxies based on the TNG50 subhalos. The
 	* Fiducial: Analysis was performed using the fiducial method, i.e., the median of the one-dimensional posterior distribution of the parameters. 
 - ``codes``: Codes used to run the pipelines, as well as codes to control the job submission on the LNCC supercomputer.
 - ``config``: Contains configuration files which customize default **PyAutoLens**.
- 
+
+Models
+-----
+The model configuration applied to each of the runs. 
+
+- ``model1``
+	
+	* ~35 kinematical tracers;
+	* gNFW profile;
+	* constant mass-to-light ratio;
+	* constant stellar anisotropy;
+
+- ``model2``
+	
+	* ~15 kinematical tracers;
+	* gNFW profile;
+	* constant mass-to-light ratio;
+	* constant stellar anisotropy;
+  
+- ``model3``
+	
+	* ~55 kinematical tracers;
+	* gNFW profile;
+	* constant mass-to-light ratio;
+	* constant stellar anisotropy;
+
+- ``model4``
+	
+	* ~35 kinematical tracers;
+	* gNFW profile with fixed scale radius at 10*Reff;
+	* constant mass-to-light ratio;
+	* constant stellar anisotropy; 
 
 Files
 -----
