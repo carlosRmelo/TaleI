@@ -340,3 +340,4 @@ simple_sim/model1/normal/shear/dyLens/phase5/instance_for_phase5.pickle
 *.pickle
 simple_sim/model2/normal/shear/dyLens/phase1.tar.xz
 simple_sim/model3/normal/shear/dyLens/phase1.tar.xz
+simple_sim/model4/normal/shear/dyLens/phase1.tar.xz
